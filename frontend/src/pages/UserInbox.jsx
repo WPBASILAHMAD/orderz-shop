@@ -1,3 +1,5 @@
+/** @format */
+
 import React, { useEffect, useRef, useState } from "react";
 import Header from "../components/Layout/Header";
 import { useSelector } from "react-redux";
@@ -9,11 +11,11 @@ import { useNavigate } from "react-router-dom";
 import { AiOutlineArrowRight, AiOutlineSend } from "react-icons/ai";
 import { TfiGallery } from "react-icons/tfi";
 import styles from "../styles/styles";
-const ENDPOINT = "https://socket-ecommerce-tu68.onrender.com/";
+const ENDPOINT = "http://localhost:4000";
 const socketId = socketIO(ENDPOINT, { transports: ["websocket"] });
 
 const UserInbox = () => {
-  const { user,loading } = useSelector((state) => state.user);
+  const { user, loading } = useSelector((state) => state.user);
   const [conversations, setConversations] = useState([]);
   const [arrivalMessage, setArrivalMessage] = useState(null);
   const [currentChat, setCurrentChat] = useState();
@@ -161,7 +163,6 @@ const UserInbox = () => {
   };
 
   const imageSendingHandler = async (e) => {
-
     const receiverId = currentChat.members.find(
       (member) => member !== user._id
     );
@@ -174,15 +175,12 @@ const UserInbox = () => {
 
     try {
       await axios
-        .post(
-          `${server}/message/create-new-message`,
-          {
-            images: e,
-            sender: user._id,
-            text: newMessage,
-            conversationId: currentChat._id,
-          }
-        )
+        .post(`${server}/message/create-new-message`, {
+          images: e,
+          sender: user._id,
+          text: newMessage,
+          conversationId: currentChat._id,
+        })
         .then((res) => {
           setImages();
           setMessages([...messages, res.data.message]);
@@ -263,7 +261,7 @@ const MessageList = ({
   userData,
   online,
   setActiveStatus,
-  loading
+  loading,
 }) => {
   const [active, setActive] = useState(0);
   const [user, setUser] = useState([]);
@@ -298,8 +296,7 @@ const MessageList = ({
         setCurrentChat(data) ||
         setUserData(user) ||
         setActiveStatus(online)
-      }
-    >
+      }>
       <div className="relative">
         <img
           src={`${user?.avatar?.url}`}
@@ -367,8 +364,7 @@ const SellerInbox = ({
               className={`flex w-full my-2 ${
                 item.sender === sellerId ? "justify-end" : "justify-start"
               }`}
-              ref={scrollRef}
-            >
+              ref={scrollRef}>
               {item.sender !== sellerId && (
                 <img
                   src={`${userData?.avatar?.url}`}
@@ -387,8 +383,7 @@ const SellerInbox = ({
                   <div
                     className={`w-max p-2 rounded ${
                       item.sender === sellerId ? "bg-[#000]" : "bg-[#38c776]"
-                    } text-[#fff] h-min`}
-                  >
+                    } text-[#fff] h-min`}>
                     <p>{item.text}</p>
                   </div>
 
@@ -405,8 +400,7 @@ const SellerInbox = ({
       <form
         aria-required={true}
         className="p-3 relative w-full flex justify-between items-center"
-        onSubmit={sendMessageHandler}
-      >
+        onSubmit={sendMessageHandler}>
         <div className="w-[30px]">
           <input
             type="file"
