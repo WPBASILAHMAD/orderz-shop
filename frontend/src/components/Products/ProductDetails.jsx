@@ -1,3 +1,5 @@
+/** @format */
+
 import React, { useEffect, useState } from "react";
 import {
   AiFillHeart,
@@ -85,10 +87,9 @@ const ProductDetails = ({ data }) => {
       0
     );
 
-  const avg =  totalRatings / totalReviewsLength || 0;
+  const avg = totalRatings / totalReviewsLength || 0;
 
   const averageRating = avg.toFixed(2);
-
 
   const handleMessageSubmit = async () => {
     if (isAuthenticated) {
@@ -130,8 +131,7 @@ const ProductDetails = ({ data }) => {
                       <div
                         className={`${
                           select === 0 ? "border" : "null"
-                        } cursor-pointer`}
-                      >
+                        } cursor-pointer`}>
                         <img
                           src={`${i?.url}`}
                           alt=""
@@ -143,8 +143,7 @@ const ProductDetails = ({ data }) => {
                   <div
                     className={`${
                       select === 1 ? "border" : "null"
-                    } cursor-pointer`}
-                  ></div>
+                    } cursor-pointer`}></div>
                 </div>
               </div>
               <div className="w-full 800px:w-[50%] pt-5">
@@ -152,10 +151,10 @@ const ProductDetails = ({ data }) => {
                 <p>{data.description}</p>
                 <div className="flex pt-3">
                   <h4 className={`${styles.productDiscountPrice}`}>
-                    {data.discountPrice}$
+                    Rs: {data.discountPrice}
                   </h4>
                   <h3 className={`${styles.price}`}>
-                    {data.originalPrice ? data.originalPrice + "$" : null}
+                    {data.originalPrice ? data.originalPrice + "Rs:" : null}
                   </h3>
                 </div>
 
@@ -163,8 +162,7 @@ const ProductDetails = ({ data }) => {
                   <div>
                     <button
                       className="bg-gradient-to-r from-teal-400 to-teal-500 text-white font-bold rounded-l px-4 py-2 shadow-lg hover:opacity-75 transition duration-300 ease-in-out"
-                      onClick={decrementCount}
-                    >
+                      onClick={decrementCount}>
                       -
                     </button>
                     <span className="bg-gray-200 text-gray-800 font-medium px-4 py-[11px]">
@@ -172,8 +170,7 @@ const ProductDetails = ({ data }) => {
                     </span>
                     <button
                       className="bg-gradient-to-r from-teal-400 to-teal-500 text-white font-bold rounded-l px-4 py-2 shadow-lg hover:opacity-75 transition duration-300 ease-in-out"
-                      onClick={incrementCount}
-                    >
+                      onClick={incrementCount}>
                       +
                     </button>
                   </div>
@@ -199,8 +196,7 @@ const ProductDetails = ({ data }) => {
                 </div>
                 <div
                   className={`${styles.button} !mt-6 !rounded !h-11 flex items-center`}
-                  onClick={() => addToCartHandler(data._id)}
-                >
+                  onClick={() => addToCartHandler(data._id)}>
                   <span className="text-white flex items-center">
                     Add to cart <AiOutlineShoppingCart className="ml-1" />
                   </span>
@@ -225,8 +221,7 @@ const ProductDetails = ({ data }) => {
                   </div>
                   <div
                     className={`${styles.button} bg-[#6443d1] mt-4 !rounded !h-11`}
-                    onClick={handleMessageSubmit}
-                  >
+                    onClick={handleMessageSubmit}>
                     <span className="text-white flex items-center">
                       Send Message <AiOutlineMessage className="ml-1" />
                     </span>
@@ -265,8 +260,7 @@ const ProductDetailsInfo = ({
             className={
               "text-[#000] text-[18px] px-1 leading-5 font-[600] cursor-pointer 800px:text-[20px]"
             }
-            onClick={() => setActive(1)}
-          >
+            onClick={() => setActive(1)}>
             Product Details
           </h5>
           {active === 1 ? (
@@ -278,8 +272,7 @@ const ProductDetailsInfo = ({
             className={
               "text-[#000] text-[18px] px-1 leading-5 font-[600] cursor-pointer 800px:text-[20px]"
             }
-            onClick={() => setActive(2)}
-          >
+            onClick={() => setActive(2)}>
             Product Reviews
           </h5>
           {active === 2 ? (
@@ -291,8 +284,7 @@ const ProductDetailsInfo = ({
             className={
               "text-[#000] text-[18px] px-1 leading-5 font-[600] cursor-pointer 800px:text-[20px]"
             }
-            onClick={() => setActive(3)}
-          >
+            onClick={() => setActive(3)}>
             Seller Information
           </h5>
           {active === 3 ? (
@@ -376,8 +368,7 @@ const ProductDetailsInfo = ({
               </h5>
               <Link to="/">
                 <div
-                  className={`${styles.button} !rounded-[4px] !h-[39.5px] mt-3`}
-                >
+                  className={`${styles.button} !rounded-[4px] !h-[39.5px] mt-3`}>
                   <h4 className="text-white">Visit Shop</h4>
                 </div>
               </Link>
