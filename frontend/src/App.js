@@ -1,3 +1,5 @@
+/** @format */
+
 import React, { useEffect, useState } from "react";
 import "./App.css";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
@@ -26,6 +28,7 @@ import {
   ShopDashboardPage,
   ShopCreateProduct,
   ShopAllProducts,
+  ShopProductsAttributes,
   ShopCreateEvents,
   ShopAllEvents,
   ShopAllCoupouns,
@@ -44,7 +47,7 @@ import {
   AdminDashboardOrders,
   AdminDashboardProducts,
   AdminDashboardEvents,
-  AdminDashboardWithdraw
+  AdminDashboardWithdraw,
 } from "./routes/AdminRoutes";
 import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
@@ -219,6 +222,14 @@ const App = () => {
             </SellerProtectedRoute>
           }
         />
+         <Route
+          path="/dashboard-products-attributes"
+          element={
+            <SellerProtectedRoute>
+              <ShopProductsAttributes />
+            </SellerProtectedRoute>
+          }
+        />
         <Route
           path="/dashboard-create-event"
           element={
@@ -263,17 +274,17 @@ const App = () => {
         <Route
           path="/admin/dashboard"
           element={
-            <ProtectedAdminRoute>
+           
               <AdminDashboardPage />
-            </ProtectedAdminRoute>
+           
           }
         />
         <Route
           path="/admin-users"
           element={
-            <ProtectedAdminRoute>
+            
               <AdminDashboardUsers />
-            </ProtectedAdminRoute>
+            
           }
         />
         <Route
@@ -292,7 +303,7 @@ const App = () => {
             </ProtectedAdminRoute>
           }
         />
-         <Route
+        <Route
           path="/admin-products"
           element={
             <ProtectedAdminRoute>
@@ -300,7 +311,7 @@ const App = () => {
             </ProtectedAdminRoute>
           }
         />
-         <Route
+        <Route
           path="/admin-events"
           element={
             <ProtectedAdminRoute>
@@ -308,13 +319,9 @@ const App = () => {
             </ProtectedAdminRoute>
           }
         />
-         <Route
+        <Route
           path="/admin-withdraw-request"
-          element={
-            <ProtectedAdminRoute>
-              <AdminDashboardWithdraw />
-            </ProtectedAdminRoute>
-          }
+          element={<AdminDashboardWithdraw />}
         />
       </Routes>
       <ToastContainer

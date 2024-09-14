@@ -1,3 +1,5 @@
+/** @format */
+
 const express = require("express");
 const { isSeller, isAuthenticated, isAdmin } = require("../middleware/auth");
 const catchAsyncErrors = require("../middleware/catchAsyncErrors");
@@ -25,20 +27,20 @@ router.post(
         } else {
           images = req.body.images;
         }
-      
+
         const imagesLinks = [];
-      
+
         for (let i = 0; i < images.length; i++) {
           const result = await cloudinary.v2.uploader.upload(images[i], {
             folder: "products",
           });
-      
+
           imagesLinks.push({
             public_id: result.public_id,
             url: result.secure_url,
           });
         }
-      
+
         const productData = req.body;
         productData.images = imagesLinks;
         productData.shop = shop;
@@ -52,6 +54,70 @@ router.post(
       }
     } catch (error) {
       return next(new ErrorHandler(error, 400));
+    }
+  })
+);
+
+// update product
+router.put(
+  "/update-product/:id",
+  catchAsyncErrors(async (req, res, next) => {
+    try {
+      const productId = req.params.id;
+      const product = await Product.findById(productId);
+
+      if (!product) {
+        return next(new ErrorHandler("Product not found!", 404));
+      }
+
+      // If new images are provided, upload them to cloudinary
+      let images = [];
+
+      if (req.body.images) {
+        if (typeof req.body.images === "string") {
+          images.push(req.body.images);
+        } else {
+          images = req.body.images;
+        }
+
+        // Delete existing images from Cloudinary
+        for (let i = 0; i < product.images.length; i++) {
+          await cloudinary.v2.uploader.destroy(product.images[i].public_id);
+        }
+
+        // Upload new images to Cloudinary
+        const imagesLinks = [];
+
+        for (let i = 0; i < images.length; i++) {
+          const result = await cloudinary.v2.uploader.upload(images[i], {
+            folder: "products",
+          });
+
+          imagesLinks.push({
+            public_id: result.public_id,
+            url: result.secure_url,
+          });
+        }
+
+        req.body.images = imagesLinks;
+      }
+
+      // Update product with new data
+      const updatedProduct = await Product.findByIdAndUpdate(
+        productId,
+        req.body,
+        {
+          new: true, // Return the updated document
+          runValidators: true, // Run schema validators
+        }
+      );
+
+      res.status(200).json({
+        success: true,
+        product: updatedProduct,
+      });
+    } catch (error) {
+      return next(new ErrorHandler(error.message, 400));
     }
   })
 );
@@ -83,14 +149,14 @@ router.delete(
 
       if (!product) {
         return next(new ErrorHandler("Product is not found with this id", 404));
-      }    
+      }
 
       for (let i = 0; 1 < product.images.length; i++) {
         const result = await cloudinary.v2.uploader.destroy(
           product.images[i].public_id
         );
       }
-    
+
       await product.remove();
 
       res.status(201).json({

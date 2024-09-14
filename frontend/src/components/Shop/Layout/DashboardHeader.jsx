@@ -1,3 +1,5 @@
+/** @format */
+
 import React from "react";
 import { AiOutlineGift } from "react-icons/ai";
 import { MdOutlineLocalOffer } from "react-icons/md";
@@ -12,10 +14,13 @@ const DashboardHeader = () => {
     <div className="w-full h-[80px] bg-white shadow sticky top-0 left-0 z-30 flex items-center justify-between px-4">
       <div>
         <Link to="/dashboard">
-          <img
+          {/* <img
             src="https://shopo.quomodothemes.website/assets/images/logo.svg"
             alt=""
-          />
+          /> */}
+          <h3 className="text-3xl font-bold  font-Poppins ">
+            Orderz <span className="text-[#ffbb38]">Shop</span>
+          </h3>
         </Link>
       </div>
       <div className="flex items-center">

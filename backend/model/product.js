@@ -1,3 +1,5 @@
+/** @format */
+
 const mongoose = require("mongoose");
 
 const productSchema = new mongoose.Schema({
@@ -13,6 +15,11 @@ const productSchema = new mongoose.Schema({
     type: String,
     required: [true, "Please enter your product category!"],
   },
+  type: {
+    type: String,
+    required: [true, "Product type is a required field!"],
+    default: "simple",
+  },
   tags: {
     type: String,
   },
@@ -21,7 +28,6 @@ const productSchema = new mongoose.Schema({
   },
   discountPrice: {
     type: Number,
-    required: [true, "Please enter your product price!"],
   },
   stock: {
     type: Number,
@@ -53,10 +59,10 @@ const productSchema = new mongoose.Schema({
       productId: {
         type: String,
       },
-      createdAt:{
+      createdAt: {
         type: Date,
         default: Date.now(),
-      }
+      },
     },
   ],
   ratings: {
@@ -66,6 +72,7 @@ const productSchema = new mongoose.Schema({
     type: String,
     required: true,
   },
+  attributes: [{ id: { type: String }, option: { type: Object } }],
   shop: {
     type: Object,
     required: true,

@@ -1,3 +1,5 @@
+/** @format */
+
 const express = require("express");
 const router = express.Router();
 const ErrorHandler = require("../utils/ErrorHandler");
@@ -6,6 +8,7 @@ const { isAuthenticated, isSeller, isAdmin } = require("../middleware/auth");
 const Order = require("../model/order");
 const Shop = require("../model/shop");
 const Product = require("../model/product");
+const Attribute = require("../model/attributes");
 
 // create new order
 router.post(
@@ -29,12 +32,20 @@ router.post(
       const orders = [];
 
       for (const [shopId, items] of shopItemsMap) {
+        // Fetch the shop attributes to validate the order
+        const attributes = await Attribute.find({ shop: shopId });
+
         const order = await Order.create({
           cart: items,
           shippingAddress,
           user,
           totalPrice,
           paymentInfo,
+          attributes: attributes.map((attr) => ({
+            id: attr._id,
+            name: attr.name,
+            options: attr.options,
+          })),
         });
         orders.push(order);
       }
@@ -111,7 +122,7 @@ router.put(
       if (req.body.status === "Delivered") {
         order.deliveredAt = Date.now();
         order.paymentInfo.status = "Succeeded";
-        const serviceCharge = order.totalPrice * .10;
+        const serviceCharge = order.totalPrice * 0.1;
         await updateSellerInfo(order.totalPrice - serviceCharge);
       }
 
@@ -133,7 +144,7 @@ router.put(
 
       async function updateSellerInfo(amount) {
         const seller = await Shop.findById(req.seller.id);
-        
+
         seller.availableBalance = amount;
 
         await seller.save();
