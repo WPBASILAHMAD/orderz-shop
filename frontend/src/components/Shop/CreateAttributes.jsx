@@ -2,6 +2,7 @@
 
 import React, { useState, useEffect } from "react";
 import axios from "axios";
+import { useSelector } from "react-redux";
 import { toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { useParams } from "react-router-dom"; // For fetching shopId from URL
@@ -10,6 +11,8 @@ import { server } from "../../server";
 const CreateAttributes = () => {
   const { id } = useParams(); // Get shop ID from the URL params
   const [name, setName] = useState("");
+  const { isSeller, seller } = useSelector((state) => state.seller);
+
   const [options, setOptions] = useState("");
   const [shopId, setShopId] = useState("");
   const [attributes, setAttributes] = useState([]);
@@ -19,8 +22,10 @@ const CreateAttributes = () => {
 
   useEffect(() => {
     fetchAttributes();
+    // fetchShopId();
   }, []);
 
+  // Fetch all attributes
   const fetchAttributes = async () => {
     try {
       const response = await axios.get(`${server}/attribute/`);
@@ -30,16 +35,18 @@ const CreateAttributes = () => {
     }
   };
 
+  // Fetch shop ID based on the params (id)
   // const fetchShopId = async () => {
   //   try {
-  //     const response = await axios.get(`${server}/shop/${id}`);
-  //     const shopData = response.data; // Assuming the response contains the shop object
-  //     setShopId(shopData._id); // Set the fetched shop ID
+  //     const response = await axios.get(`${server}/shop/get-shop-info/${id}`); // Ensure this endpoint matches your backend
+  //     const shopData = response.data.shop;
+  //     setShopId(shopData._id);
   //   } catch (error) {
   //     toast.error("Failed to fetch shop ID");
   //   }
   // };
 
+  // Handle form submission (either create or update)
   const handleSubmit = async (e) => {
     e.preventDefault();
     if (editId) {
@@ -49,6 +56,7 @@ const CreateAttributes = () => {
     }
   };
 
+  // Create new attribute
   const handleCreate = async () => {
     try {
       await axios.post(`${server}/attribute/create`, {
@@ -57,7 +65,7 @@ const CreateAttributes = () => {
           key: option.trim().toLowerCase(),
           value: option.trim(),
         })),
-        shopId, // Send shopId in the request
+        shopId: seller._id, // Send the fetched shop ID
       });
       toast.success("Attribute created successfully!");
       setName("");
@@ -70,6 +78,7 @@ const CreateAttributes = () => {
     }
   };
 
+  // Update an existing attribute
   const handleUpdate = async () => {
     try {
       await axios.put(`${server}/attribute/update/${editId}`, {
@@ -78,7 +87,7 @@ const CreateAttributes = () => {
           key: option.trim().toLowerCase(),
           value: option.trim(),
         })),
-        shopId, // Send shopId in the update request
+        shopId: seller._id, // Include the shopId in the update request
       });
       toast.success("Attribute updated successfully!");
       setEditId(null);
@@ -92,12 +101,14 @@ const CreateAttributes = () => {
     }
   };
 
+  // Set values for editing an attribute
   const handleEdit = (attribute) => {
     setEditId(attribute._id);
     setEditName(attribute.name);
     setEditOptions(attribute.options.map((option) => option.value).join(", "));
   };
 
+  // Delete an attribute
   const handleDelete = async (id) => {
     try {
       await axios.delete(`${server}/attribute/delete/${id}`);
@@ -170,7 +181,9 @@ const CreateAttributes = () => {
               <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                 Options
               </th>
-
+              {/* <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                Shop ID
+              </th> */}
               <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                 Actions
               </th>
@@ -185,7 +198,14 @@ const CreateAttributes = () => {
                 <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
                   {attribute.options.map((option) => option.value).join(", ")}
                 </td>
-
+                {/* <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                  <input
+                    type="text"
+                    value={attribute.shop._id}
+                    className="w-full border border-gray-300 rounded-lg p-2 shadow-sm bg-gray-100 text-gray-600 cursor-not-allowed"
+                    readOnly
+                  />
+                </td> */}
                 <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
                   <button
                     onClick={() => handleEdit(attribute)}
