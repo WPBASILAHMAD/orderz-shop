@@ -1,3 +1,5 @@
+/** @format */
+
 import React, { useState } from "react";
 import Footer from "../components/Layout/Footer";
 import Header from "../components/Layout/Header";
@@ -33,8 +35,7 @@ const Faq = () => {
         <div className="border-b border-gray-200 pb-4">
           <button
             className="flex items-center justify-between w-full"
-            onClick={() => toggleTab(2)}
-          >
+            onClick={() => toggleTab(2)}>
             <span className="text-lg font-medium text-gray-900">
               What is your return policy?
             </span>
@@ -43,8 +44,7 @@ const Faq = () => {
                 className="h-6 w-6 text-gray-500"
                 fill="none"
                 viewBox="0 0 24 24"
-                stroke="currentColor"
-              >
+                stroke="currentColor">
                 <path
                   strokeLinecap="round"
                   strokeLinejoin="round"
@@ -57,8 +57,7 @@ const Faq = () => {
                 className="h-6 w-6 text-gray-500"
                 fill="none"
                 viewBox="0 0 24 24"
-                stroke="currentColor"
-              >
+                stroke="currentColor">
                 <path
                   strokeLinecap="round"
                   strokeLinejoin="round"
@@ -73,8 +72,8 @@ const Faq = () => {
               <p className="text-base text-gray-500">
                 If you're not satisfied with your purchase, we accept returns
                 within 30 days of delivery. To initiate a return, please email
-                us at support@myecommercestore.com with your order number and a
-                brief explanation of why you're returning the item.
+                us at support@orderzshop.com with your order number and a brief
+                explanation of why you're returning the item.
               </p>
             </div>
           )}
@@ -83,8 +82,7 @@ const Faq = () => {
         <div className="border-b border-gray-200 pb-4">
           <button
             className="flex items-center justify-between w-full"
-            onClick={() => toggleTab(3)}
-          >
+            onClick={() => toggleTab(3)}>
             <span className="text-lg font-medium text-gray-900">
               How do I track my order?
             </span>
@@ -93,8 +91,7 @@ const Faq = () => {
                 className="h-6 w-6 text-gray-500"
                 fill="none"
                 viewBox="0 0 24 24"
-                stroke="currentColor"
-              >
+                stroke="currentColor">
                 <path
                   strokeLinecap="round"
                   strokeLinejoin="round"
@@ -107,8 +104,7 @@ const Faq = () => {
                 className="h-6 w-6 text-gray-500"
                 fill="none"
                 viewBox="0 0 24 24"
-                stroke="currentColor"
-              >
+                stroke="currentColor">
                 <path
                   strokeLinecap="round"
                   strokeLinejoin="round"
@@ -132,8 +128,7 @@ const Faq = () => {
         <div className="border-b border-gray-200 pb-4">
           <button
             className="flex items-center justify-between w-full"
-            onClick={() => toggleTab(4)}
-          >
+            onClick={() => toggleTab(4)}>
             <span className="text-lg font-medium text-gray-900">
               How do I contact customer support?
             </span>
@@ -142,8 +137,7 @@ const Faq = () => {
                 className="h-6 w-6 text-gray-500"
                 fill="none"
                 viewBox="0 0 24 24"
-                stroke="currentColor"
-              >
+                stroke="currentColor">
                 <path
                   strokeLinecap="round"
                   strokeLinejoin="round"
@@ -156,8 +150,7 @@ const Faq = () => {
                 className="h-6 w-6 text-gray-500"
                 fill="none"
                 viewBox="0 0 24 24"
-                stroke="currentColor"
-              >
+                stroke="currentColor">
                 <path
                   strokeLinecap="round"
                   strokeLinejoin="round"
@@ -171,8 +164,8 @@ const Faq = () => {
             <div className="mt-4">
               <p className="text-base text-gray-500">
                 You can contact our customer support team by emailing us at
-                support@myecommercestore.com, or by calling us at (555) 123-4567
-                between the hours of 9am and 5pm EST, Monday through Friday.
+                support@orderzshop.com, or by calling us at +92-312-444-1798
+                between the hours of 9am and 5pm UST, Monday through Sunday.
               </p>
             </div>
           )}
@@ -181,8 +174,7 @@ const Faq = () => {
         <div className="border-b border-gray-200 pb-4">
           <button
             className="flex items-center justify-between w-full"
-            onClick={() => toggleTab(5)}
-          >
+            onClick={() => toggleTab(5)}>
             <span className="text-lg font-medium text-gray-900">
               Can I change or cancel my order?
             </span>
@@ -191,8 +183,7 @@ const Faq = () => {
                 className="h-6 w-6 text-gray-500"
                 fill="none"
                 viewBox="0 0 24 24"
-                stroke="currentColor"
-              >
+                stroke="currentColor">
                 <path
                   strokeLinecap="round"
                   strokeLinejoin="round"
@@ -205,8 +196,7 @@ const Faq = () => {
                 className="h-6 w-6 text-gray-500"
                 fill="none"
                 viewBox="0 0 24 24"
-                stroke="currentColor"
-              >
+                stroke="currentColor">
                 <path
                   strokeLinecap="round"
                   strokeLinejoin="round"
@@ -231,8 +221,7 @@ const Faq = () => {
         <div className="border-b border-gray-200 pb-4">
           <button
             className="flex items-center justify-between w-full"
-            onClick={() => toggleTab(6)}
-          >
+            onClick={() => toggleTab(6)}>
             <span className="text-lg font-medium text-gray-900">
               Do you offer international shipping?
             </span>
@@ -241,8 +230,7 @@ const Faq = () => {
                 className="h-6 w-6 text-gray-500"
                 fill="none"
                 viewBox="0 0 24 24"
-                stroke="currentColor"
-              >
+                stroke="currentColor">
                 <path
                   strokeLinecap="round"
                   strokeLinejoin="round"
@@ -255,8 +243,7 @@ const Faq = () => {
                 className="h-6 w-6 text-gray-500"
                 fill="none"
                 viewBox="0 0 24 24"
-                stroke="currentColor"
-              >
+                stroke="currentColor">
                 <path
                   strokeLinecap="round"
                   strokeLinejoin="round"
@@ -269,7 +256,7 @@ const Faq = () => {
           {activeTab === 6 && (
             <div className="mt-4">
               <p className="text-base text-gray-500">
-                Currently, we only offer shipping within the United States.
+                Currently, we only offer shipping within the <b> Pakistan</b>.
               </p>
             </div>
           )}
@@ -278,8 +265,7 @@ const Faq = () => {
         <div className="border-b border-gray-200 pb-4">
           <button
             className="flex items-center justify-between w-full"
-            onClick={() => toggleTab(7)}
-          >
+            onClick={() => toggleTab(7)}>
             <span className="text-lg font-medium text-gray-900">
               What payment methods do you accept?
             </span>
@@ -288,8 +274,7 @@ const Faq = () => {
                 className="h-6 w-6 text-gray-500"
                 fill="none"
                 viewBox="0 0 24 24"
-                stroke="currentColor"
-              >
+                stroke="currentColor">
                 <path
                   strokeLinecap="round"
                   strokeLinejoin="round"
@@ -302,8 +287,7 @@ const Faq = () => {
                 className="h-6 w-6 text-gray-500"
                 fill="none"
                 viewBox="0 0 24 24"
-                stroke="currentColor"
-              >
+                stroke="currentColor">
                 <path
                   strokeLinecap="round"
                   strokeLinejoin="round"
@@ -316,8 +300,7 @@ const Faq = () => {
           {activeTab === 7 && (
             <div className="mt-4">
               <p className="text-base text-gray-500">
-                We accept visa,mastercard,paypal payment method also we have
-                cash on delivery system.
+                For now, we have only cash on delivery (COD) system.
               </p>
             </div>
           )}

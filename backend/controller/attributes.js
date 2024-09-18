@@ -34,10 +34,16 @@ router.post(
 );
 
 // Fetch all attributes
+// Fetch all attributes for a specific shop
 router.get(
   "/",
   catchAsyncErrors(async (req, res, next) => {
-    const attributes = await Attribute.find().populate("shop");
+    const { shopId } = req.query; // Get shopId from query parameters
+
+    // If shopId is provided, fetch attributes for that shop
+    const query = shopId ? { shop: shopId } : {}; // Query to filter by shopId
+
+    const attributes = await Attribute.find(query).populate("shop");
     res.status(200).json({
       success: true,
       attributes,
@@ -94,11 +100,17 @@ router.delete(
       return next(new ErrorHandler("Attribute not found", 404));
     }
 
+    // Optionally, ensure that the deleted attribute belongs to the current shop
+    // if (deletedAttribute.shop.toString() !== req.body.shopId) {
+    //   return next(new ErrorHandler("Not authorized to delete this attribute", 403));
+    // }
+
     res.status(200).json({
       success: true,
       message: "Attribute deleted successfully",
     });
   })
 );
+
 
 module.exports = router;

@@ -182,24 +182,24 @@ export const categoriesData = [
   },
   {
     id: 2,
-    title: "cosmetics and body care",
+    title: "Cosmetics and Body care",
     subTitle: "",
     image_Url:
-      "https://indian-retailer.s3.ap-south-1.amazonaws.com/s3fs-public/2021-07/kosme1.png",
+      "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQnkXEvv3PmzwG8J18yPzx76gfjzO9Wq_OS8Q&s",
   },
   {
     id: 3,
-    title: "Accesories",
+    title: "Accessories",
     subTitle: "",
     image_Url:
-      "https://img.freepik.com/free-vector/ordering-goods-online-internet-store-online-shopping-niche-e-commerce-website-mother-buying-babies-clothes-footwear-toys-infant-accessories_335657-2345.jpg?w=2000",
+      "https://static.vecteezy.com/system/resources/thumbnails/022/255/548/small_2x/women-s-accessories-and-gadgets-on-a-gray-background-3d-rendering-generative-ai-photo.jpg",
   },
   {
     id: 4,
     title: "Cloths",
     subTitle: "",
     image_Url:
-      "https://www.shift4shop.com/2015/images/industries/clothing/clothing-apparel.png",
+      "https://media.istockphoto.com/id/916092484/photo/women-clothes-hanging-on-hangers-clothing-rails-fashion-design.jpg?s=612x612&w=0&k=20&c=fUpcbOITkQqitglZfgJkWO3py-jsbuhc8eZfb4sdrfE=",
   },
   {
     id: 5,
@@ -213,13 +213,14 @@ export const categoriesData = [
     title: "Gifts",
     subTitle: "",
     image_Url:
-      "https://securecdn.pymnts.com/wp-content/uploads/2014/11/Gifts-Photo-700x489.jpg",
+      "https://www.bworldonline.com/wp-content/uploads/2021/12/03-gifts.jpg",
   },
   {
     id: 7,
     title: "Pet Care",
     subTitle: "",
-    image_Url: "https://cdn.openpr.com/T/c/Tc15444071_g.jpg",
+    image_Url:
+      "https://www.scotsman.com/webimg/b25lY21zOjQ2MmM5NDg1LWFhNTktNDQ1Ni1hMjEwLWE2OTc5MjM1ZmNlNDoyOTg0YzhhYS1lYmU3LTQxN2YtOTVkMS01NzEwNWFlYWUyNmM=.jpg?crop=3:2,smart&trim=&width=640&quality=65&enable=upscale",
   },
   {
     id: 8,

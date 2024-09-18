@@ -254,14 +254,14 @@ const App = () => {
             </SellerProtectedRoute>
           }
         />
-        <Route
+        {/* <Route
           path="/dashboard-withdraw-money"
           element={
             <SellerProtectedRoute>
               <ShopWithDrawMoneyPage />
             </SellerProtectedRoute>
           }
-        />
+        /> */}
         <Route
           path="/dashboard-messages"
           element={
@@ -319,10 +319,10 @@ const App = () => {
             </ProtectedAdminRoute>
           }
         />
-        <Route
+        {/* <Route
           path="/admin-withdraw-request"
           element={<AdminDashboardWithdraw />}
-        />
+        /> */}
       </Routes>
       <ToastContainer
         position="bottom-center"

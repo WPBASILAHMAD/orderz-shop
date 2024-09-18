@@ -1,3 +1,5 @@
+/** @format */
+
 import React, { useEffect, useState } from "react";
 import { AiOutlinePlusCircle } from "react-icons/ai";
 import { useDispatch, useSelector } from "react-redux";
@@ -20,6 +22,8 @@ const CreateProduct = () => {
   const [originalPrice, setOriginalPrice] = useState();
   const [discountPrice, setDiscountPrice] = useState();
   const [stock, setStock] = useState();
+  const [shippingCost, setShippingCost] = useState(0);
+  const [isFreeShipping, setIsFreeShipping] = useState(false); // Free shipping state
 
   useEffect(() => {
     if (error) {
@@ -53,10 +57,10 @@ const CreateProduct = () => {
     e.preventDefault();
 
     const newForm = new FormData();
-
     images.forEach((image) => {
       newForm.set("images", image);
     });
+
     newForm.append("name", name);
     newForm.append("description", description);
     newForm.append("category", category);
@@ -64,7 +68,10 @@ const CreateProduct = () => {
     newForm.append("originalPrice", originalPrice);
     newForm.append("discountPrice", discountPrice);
     newForm.append("stock", stock);
+    newForm.append("shippingCost", shippingCost); // Add shipping cost
+    newForm.append("isFreeShipping", isFreeShipping); // Add free shipping
     newForm.append("shopId", seller._id);
+
     dispatch(
       createProduct({
         name,
@@ -74,6 +81,8 @@ const CreateProduct = () => {
         originalPrice,
         discountPrice,
         stock,
+        shippingCost, // Include shipping cost
+        isFreeShipping, // Include free shipping
         shopId: seller._id,
         images,
       })
@@ -113,8 +122,7 @@ const CreateProduct = () => {
             value={description}
             className="mt-2 appearance-none block w-full pt-2 px-3 border border-gray-300 rounded-[3px] placeholder-gray-400 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
             onChange={(e) => setDescription(e.target.value)}
-            placeholder="Enter your product description..."
-          ></textarea>
+            placeholder="Enter your product description..."></textarea>
         </div>
         <br />
         <div>
@@ -124,8 +132,7 @@ const CreateProduct = () => {
           <select
             className="w-full mt-2 border h-[35px] rounded-[5px]"
             value={category}
-            onChange={(e) => setCategory(e.target.value)}
-          >
+            onChange={(e) => setCategory(e.target.value)}>
             <option value="Choose a category">Choose a category</option>
             {categoriesData &&
               categoriesData.map((i) => (
@@ -149,7 +156,9 @@ const CreateProduct = () => {
         </div>
         <br />
         <div>
-          <label className="pb-2">Original Price</label>
+          <label className="pb-2">
+            Original Price <span className="text-red-500">*</span>
+          </label>
           <input
             type="number"
             name="price"
@@ -161,9 +170,7 @@ const CreateProduct = () => {
         </div>
         <br />
         <div>
-          <label className="pb-2">
-            Price (With Discount) <span className="text-red-500">*</span>
-          </label>
+          <label className="pb-2">Price (With Discount)</label>
           <input
             type="number"
             name="price"
@@ -185,6 +192,31 @@ const CreateProduct = () => {
             className="mt-2 appearance-none block w-full px-3 h-[35px] border border-gray-300 rounded-[3px] placeholder-gray-400 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
             onChange={(e) => setStock(e.target.value)}
             placeholder="Enter your product stock..."
+          />
+        </div>
+        <br />
+        <div>
+          <label className="pb-2">Shipping Cost</label>
+          <input
+            type="number"
+            name="shippingCost"
+            value={shippingCost}
+            className="mt-2 appearance-none block w-full px-3 h-[35px] border border-gray-300 rounded-[3px] placeholder-gray-400 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
+            onChange={(e) => setShippingCost(e.target.value)}
+            placeholder="Enter shipping cost..."
+            disabled={isFreeShipping} // Disable if free shipping is checked
+          />
+        </div>
+        <br />
+        {/* Free Shipping Checkbox */}
+        <div>
+          <label className="pb-2">Free Shipping</label>
+          <input
+            type="checkbox"
+            name="isFreeShipping"
+            checked={isFreeShipping}
+            className="ml-2"
+            onChange={(e) => setIsFreeShipping(e.target.checked)}
           />
         </div>
         <br />

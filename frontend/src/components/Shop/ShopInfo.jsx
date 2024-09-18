@@ -1,19 +1,27 @@
 /** @format */
 
-import axios from "axios";
-import React, { useEffect, useState } from "react";
-import { Link, useParams } from "react-router-dom";
-import { server } from "../../server";
-import styles from "../../styles/styles";
-import Loader from "../Layout/Loader";
+import { useState, useEffect } from "react";
+import { useParams, Link } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
-import { getAllProductsShop } from "../../redux/actions/product";
-import Header from "../Layout/Header";
+import axios from "axios";
+import {
+  Star,
+  MapPin,
+  Phone,
+  Package,
+  Calendar,
+  Edit,
+  LogOut,
+} from "lucide-react";
 
-const ShopInfo = ({ isOwner }) => {
+import { server } from "../../server";
+import { getAllProductsShop } from "../../redux/actions/product";
+import Loader from "../Layout/Loader";
+
+export default function ShopInfo({ isOwner = false }) {
   const [data, setData] = useState({});
-  const { products } = useSelector((state) => state.products);
   const [isLoading, setIsLoading] = useState(false);
+  const { products } = useSelector((state) => state.products);
   const { id } = useParams();
   const dispatch = useDispatch();
 
@@ -30,89 +38,95 @@ const ShopInfo = ({ isOwner }) => {
         console.log(error);
         setIsLoading(false);
       });
-  }, []);
+  }, [dispatch, id]);
 
   const logoutHandler = async () => {
-    axios.get(`${server}/shop/logout`, {
-      withCredentials: true,
-    });
+    await axios.get(`${server}/shop/logout`, { withCredentials: true });
     window.location.reload();
   };
 
   const totalReviewsLength =
-    products &&
-    products.reduce((acc, product) => acc + product.reviews.length, 0);
-
+    products?.reduce((acc, product) => acc + product.reviews.length, 0) || 0;
   const totalRatings =
-    products &&
-    products.reduce(
+    products?.reduce(
       (acc, product) =>
         acc + product.reviews.reduce((sum, review) => sum + review.rating, 0),
       0
-    );
-
+    ) || 0;
   const averageRating = totalRatings / totalReviewsLength || 0;
 
-  return (
-    <>
-      {isLoading ? (
-        <Loader />
-      ) : (
-        <div>
-          <div className="w-full py-5">
-            <div className="w-full flex item-center justify-center">
-              <img
-                src={`${data.avatar?.url}`}
-                alt=""
-                className="w-[150px] h-[150px] object-cover rounded-full"
-              />
-            </div>
-            <h3 className="text-center py-2 text-[20px]">{data.name}</h3>
-            <p className="text-[16px] text-[#000000a6] p-[10px] flex items-center">
-              {data.description}
-            </p>
-          </div>
-          <div className="p-3">
-            <h5 className="font-[600]">Address</h5>
-            <h4 className="text-[#000000a6]">{data.address}</h4>
-          </div>
-          <div className="p-3">
-            <h5 className="font-[600]">Phone Number</h5>
-            <h4 className="text-[#000000a6]">{data.phoneNumber}</h4>
-          </div>
-          <div className="p-3">
-            <h5 className="font-[600]">Total Products</h5>
-            <h4 className="text-[#000000a6]">{products && products.length}</h4>
-          </div>
-          <div className="p-3">
-            <h5 className="font-[600]">Shop Ratings</h5>
-            <h4 className="text-[#000000b0]">{averageRating}/5</h4>
-          </div>
-          <div className="p-3">
-            <h5 className="font-[600]">Joined On</h5>
-            <h4 className="text-[#000000b0]">
-              {data?.createdAt?.slice(0, 10)}
-            </h4>
-          </div>
-          {isOwner && (
-            <div className="py-3 px-4">
-              <Link to="/settings">
-                <div
-                  className={`${styles.button} !w-full !h-[42px] !rounded-[5px]`}>
-                  <span className="text-white">Edit Shop</span>
-                </div>
-              </Link>
-              <div
-                className={`${styles.button} !w-full !h-[42px] !rounded-[5px]`}
-                onClick={logoutHandler}>
-                <span className="text-white">Log Out</span>
-              </div>
-            </div>
-          )}
-        </div>
-      )}
-    </>
-  );
-};
+  if (isLoading) return <Loader />;
 
-export default ShopInfo;
+  return (
+    <div className="bg-gray-100 min-h-screen ">
+      <div className=" mx-auto bg-white rounded-lg shadow-lg overflow-hidden">
+        <div className="relative h-50 pt-28 bg-gradient-to-r from-blue-500 to-purple-600">
+          <img
+            src={data.avatar?.url}
+            alt={data.name}
+            className="absolute bottom-0 left-1/2 transform -translate-x-1/2 translate-y-1/2 w-32 h-32 rounded-full border-4  object-contain bg-white"
+          />
+        </div>
+        <div className="pt-16 pb-8 px-8 text-center">
+          <h1 className="text-3xl font-bold text-gray-800">{data.name}</h1>
+          <p className="mt-2 text-gray-600">{data.description}</p>
+        </div>
+        <div className="border-t border-gray-200 px-8 py-6 grid grid-cols-1 md:grid-cols-1 gap-6">
+          <InfoItem
+            icon={<MapPin className="w-5 h-5 text-gray-400" />}
+            label="Address"
+            value={data.address}
+          />
+          <InfoItem
+            icon={<Phone className="w-5 h-5 text-gray-400" />}
+            label="Phone Number"
+            value={data.phoneNumber}
+          />
+          <InfoItem
+            icon={<Package className="w-5 h-5 text-gray-400" />}
+            label="Total Products"
+            value={products?.length || 0}
+          />
+          <InfoItem
+            icon={<Star className="w-5 h-5 text-yellow-400" />}
+            label="Shop Rating"
+            value={`${averageRating.toFixed(1)}/5`}
+          />
+          <InfoItem
+            icon={<Calendar className="w-5 h-5 text-gray-400" />}
+            label="Joined On"
+            value={data.createdAt?.slice(0, 10)}
+          />
+        </div>
+        {isOwner && (
+          <div className="border-t border-gray-200 px-8 py-6 flex flex-col sm:flex-col gap-4">
+            <Link
+              to="/settings"
+              className="flex-1 bg-blue-500 text-white py-2 px-4 rounded-md hover:bg-blue-600 transition-colors duration-200 flex items-center justify-center">
+              <Edit className="w-5 h-5 mr-2" />
+              Edit Shop
+            </Link>
+            <button
+              onClick={logoutHandler}
+              className="flex-1 bg-red-500 text-white py-2 px-4 rounded-md hover:bg-red-600 transition-colors duration-200 flex items-center justify-center">
+              <LogOut className="w-5 h-5 mr-2" />
+              Log Out
+            </button>
+          </div>
+        )}
+      </div>
+    </div>
+  );
+}
+
+function InfoItem({ icon, label, value }) {
+  return (
+    <div className="flex items-center">
+      {icon}
+      <div className="ml-3">
+        <p className="text-sm font-medium text-gray-500">{label}</p>
+        <p className="text-lg font-semibold text-gray-800">{value}</p>
+      </div>
+    </div>
+  );
+}

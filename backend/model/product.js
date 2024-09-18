@@ -25,6 +25,7 @@ const productSchema = new mongoose.Schema({
   },
   originalPrice: {
     type: Number,
+    required: [true, "Please enter your product price!"],
   },
   discountPrice: {
     type: Number,
@@ -32,6 +33,14 @@ const productSchema = new mongoose.Schema({
   stock: {
     type: Number,
     required: [true, "Please enter your product stock!"],
+  },
+  shippingCost: {
+    type: Number,
+    default: 0, // Default shipping cost is 0
+  },
+  isFreeShipping: {
+    type: Boolean,
+    default: false, // Default isFreeShipping is false
   },
   images: [
     {

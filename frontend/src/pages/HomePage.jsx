@@ -7,16 +7,17 @@ import Categories from "../components/Route/Categories/Categories";
 import BestDeals from "../components/Route/BestDeals/BestDeals";
 import FeaturedProduct from "../components/Route/FeaturedProduct/FeaturedProduct";
 import Events from "../components/Events/Events";
-import Sponsored from "../components/Route/Sponsored";
+import Sponsored from "../components/Route/VendorsAvatars";
 import Branding from "../components/Route/Branding/Branding";
 import Footer from "../components/Layout/Footer";
-
+import VendorsAvatar from "./VendorsAvatar";
 const HomePage = () => {
   return (
     <div>
       <Header activeHeading={1} />
       <Hero />
-      <Sponsored />
+
+      <VendorsAvatar />
       <Categories />
       <BestDeals />
       <Events />

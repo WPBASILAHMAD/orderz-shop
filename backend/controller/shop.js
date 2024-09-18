@@ -165,6 +165,22 @@ router.get(
   })
 );
 
+// get all shop avatars
+router.get(
+  "/get-shop-avatars",
+  catchAsyncErrors(async (req, res, next) => {
+    try {
+      const shops = await Shop.find().select("avatar"); // Fetch only the avatar field
+      res.status(200).json({
+        success: true,
+        avatars: shops.map((shop) => shop.avatar),
+      });
+    } catch (error) {
+      return next(new ErrorHandler(error.message, 500));
+    }
+  })
+);
+
 // log out from shop
 router.get(
   "/logout",

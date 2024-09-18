@@ -1,3 +1,5 @@
+/** @format */
+
 import { Button } from "@material-ui/core";
 import { DataGrid } from "@material-ui/data-grid";
 import React, { useEffect } from "react";
@@ -74,6 +76,7 @@ const AllOrders = () => {
     orders.forEach((item) => {
       row.push({
         id: item._id,
+        name: item.name,
         itemsQty: item.cart.length,
         total: "Rs: " + item.totalPrice,
         status: item.status,

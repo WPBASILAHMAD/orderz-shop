@@ -28,25 +28,15 @@ const CreateAttributes = () => {
   // Fetch all attributes
   const fetchAttributes = async () => {
     try {
-      const response = await axios.get(`${server}/attribute/`);
+      const response = await axios.get(`${server}/attribute/`, {
+        params: { shopId: seller._id }, // Fetch only attributes for the current shop
+      });
       setAttributes(response.data.attributes);
     } catch (error) {
       toast.error("Failed to fetch attributes");
     }
   };
 
-  // Fetch shop ID based on the params (id)
-  // const fetchShopId = async () => {
-  //   try {
-  //     const response = await axios.get(`${server}/shop/get-shop-info/${id}`); // Ensure this endpoint matches your backend
-  //     const shopData = response.data.shop;
-  //     setShopId(shopData._id);
-  //   } catch (error) {
-  //     toast.error("Failed to fetch shop ID");
-  //   }
-  // };
-
-  // Handle form submission (either create or update)
   const handleSubmit = async (e) => {
     e.preventDefault();
     if (editId) {
