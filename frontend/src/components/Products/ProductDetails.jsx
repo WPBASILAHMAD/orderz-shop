@@ -38,6 +38,7 @@ const ProductDetails = ({ data }) => {
   const [select, setSelect] = useState(0);
   const [variations, setVariations] = useState([]);
   const [showShareIcons, setShowShareIcons] = useState(false);
+  const [shippingCost, setShippingCost] = useState(0);
   const navigate = useNavigate();
   const dispatch = useDispatch();
 
@@ -89,13 +90,13 @@ const ProductDetails = ({ data }) => {
       if (data.stock < 1) {
         toast.error("Product stock limited!");
       } else {
-        const cartData = { ...data, qty: count };
+        const shippingCost = data.isFreeShipping ? 0 : data.shippingCost || 0;
+        const cartData = { ...data, qty: count, shippingCost: shippingCost };
         dispatch(addTocart(cartData));
         toast.success("Item added to cart successfully!");
       }
     }
   };
-
   // Render the shipping cost
   const renderShippingCost = () => {
     if (data.isFreeShipping) {

@@ -1,18 +1,19 @@
 /** @format */
 
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import styles from "../../styles/styles";
 import { Country, State } from "country-state-city";
 import { useNavigate } from "react-router-dom";
 import { useSelector } from "react-redux";
-import { useEffect } from "react";
 import axios from "axios";
 import { server } from "../../server";
 import { toast } from "react-toastify";
 
 const Checkout = () => {
   const { user } = useSelector((state) => state.user);
+  // const { cart } = useSelector((state) => state.cart);
   const { cart } = useSelector((state) => state.cart);
+  console.log("Cart data:", cart);
   const [country, setCountry] = useState("");
   const [city, setCity] = useState("");
   const [userInfo, setUserInfo] = useState(false);
@@ -22,11 +23,37 @@ const Checkout = () => {
   const [couponCode, setCouponCode] = useState("");
   const [couponCodeData, setCouponCodeData] = useState(null);
   const [discountPrice, setDiscountPrice] = useState(null);
+  const [shipping, setShipping] = useState(0);
   const navigate = useNavigate();
+
+  // useEffect(() => {
+  //   window.scrollTo(0, 0);
+  // }, []);
 
   useEffect(() => {
     window.scrollTo(0, 0);
-  }, []);
+    const fetchShippingCosts = async () => {
+      try {
+        const shippingCosts = await Promise.all(
+          cart.map(async (item) => {
+            const response = await axios.get(`${server}/product/${item._id}`);
+            return response.data.isFreeShipping
+              ? 0
+              : response.data.shippingCost;
+          })
+        );
+        const totalShipping = shippingCosts.reduce(
+          (acc, cost) => acc + cost,
+          0
+        );
+        setShipping(totalShipping);
+      } catch (error) {
+        console.error("Error fetching shipping costs:", error);
+      }
+    };
+
+    fetchShippingCosts();
+  }, [cart]);
 
   const paymentSubmit = () => {
     if (
@@ -50,7 +77,7 @@ const Checkout = () => {
         cart,
         totalPrice,
         subTotalPrice,
-        shipping,
+        totalShipping: totalShipping,
         discountPrice,
         shippingAddress,
         user,
@@ -66,9 +93,13 @@ const Checkout = () => {
     (acc, item) => acc + item.qty * item.discountPrice,
     0
   );
+  const totalShipping = cart.reduce(
+    (acc, item) => acc + (item.shippingCost || 0),
+    0
+  );
 
   // this is shipping cost variable
-  const shipping = subTotalPrice * 0.1;
+  // const shipping = subTotalPrice * 0.1;
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -105,8 +136,8 @@ const Checkout = () => {
   const discountPercentenge = couponCodeData ? discountPrice : "";
 
   const totalPrice = couponCodeData
-    ? (subTotalPrice + shipping - discountPercentenge).toFixed(2)
-    : (subTotalPrice + shipping).toFixed(2);
+    ? (subTotalPrice + totalShipping - discountPercentenge).toFixed(2)
+    : (subTotalPrice + totalShipping).toFixed(2);
 
   console.log(discountPercentenge);
 
@@ -134,7 +165,7 @@ const Checkout = () => {
           <CartData
             handleSubmit={handleSubmit}
             totalPrice={totalPrice}
-            shipping={shipping}
+            totalShipping={totalShipping}
             subTotalPrice={subTotalPrice}
             couponCode={couponCode}
             setCouponCode={setCouponCode}
@@ -310,56 +341,65 @@ const ShippingInfo = ({
 const CartData = ({
   handleSubmit,
   totalPrice,
-  shipping,
+  totalShipping,
   subTotalPrice,
   couponCode,
   setCouponCode,
   discountPercentenge,
 }) => {
-  return (
-    <div className="w-full bg-[#fff] rounded-md p-5 pb-8">
-      <div className="flex justify-between">
-        <h3 className="text-[16px] font-[400] text-[#000000a4]">subtotal:</h3>
-        <h5 className="text-[18px] font-[600]">Rs: {subTotalPrice}</h5>
+  try {
+    return (
+      <div className="w-full bg-[#fff] rounded-md p-5 pb-8">
+        <div className="flex justify-between">
+          <h3 className="text-[16px] font-[400] text-[#000000a4]">subtotal:</h3>
+          <h5 className="text-[18px] font-[600]">
+            Rs: {subTotalPrice.toFixed(2)}
+          </h5>
+        </div>
+        <br />
+        <div className="flex justify-between">
+          <h3 className="text-[16px] font-[400] text-[#000000a4]">shipping:</h3>
+          <h5 className="text-[18px] font-[600]">
+            Rs: {totalShipping.toFixed(2)}
+          </h5>{" "}
+        </div>
+        <br />
+        <div className="flex justify-between border-b pb-3">
+          <h3 className="text-[16px] font-[400] text-[#000000a4]">Discount:</h3>
+          <h5 className="text-[18px] font-[600]">
+            -{" "}
+            {discountPercentenge
+              ? "Rs: " + discountPercentenge.toFixed(2)
+              : "Rs: 0.00"}
+          </h5>
+        </div>
+        <div className="flex justify-between">
+          <h3 className="text-[18px] font-[600] text-[#ff0000a4]">Total:</h3>
+          <h5 className="text-[18px] font-[600]">Rs: {totalPrice}</h5>
+        </div>
+        <br />
+        <form onSubmit={handleSubmit}>
+          <input
+            type="text"
+            className={`${styles.input} h-[40px] pl-2`}
+            placeholder="Coupon code"
+            value={couponCode}
+            onChange={(e) => setCouponCode(e.target.value)}
+            required
+          />
+          <input
+            className={`w-full h-[40px] border border-[#f63b60] text-center text-[#f63b60] rounded-[3px] mt-8 cursor-pointer`}
+            required
+            value="Apply code"
+            type="submit"
+          />
+        </form>
       </div>
-      <br />
-      <div className="flex justify-between">
-        <h3 className="text-[16px] font-[400] text-[#000000a4]">shipping:</h3>
-        <h5 className="text-[18px] font-[600]">Rs:{shipping.toFixed(2)}</h5>
-      </div>
-      <br />
-      <div className="flex justify-between border-b pb-3">
-        <h3 className="text-[16px] font-[400] text-[#000000a4]">Discount:</h3>
-        <h5 className="text-[18px] font-[600]">
-          - {discountPercentenge ? "$" + discountPercentenge.toString() : null}
-        </h5>
-      </div>
-      <div className="flex justify-between">
-        <h3 className="text-[18px] font-[600] text-[#ff0000a4]">Total:</h3>
-
-        <h5 className="text-[18px] font-[600]">
-          Rs:{totalPrice}
-        </h5>
-      </div>
-      <br />
-      <form onSubmit={handleSubmit}>
-        <input
-          type="text"
-          className={`${styles.input} h-[40px] pl-2`}
-          placeholder="Coupoun code"
-          value={couponCode}
-          onChange={(e) => setCouponCode(e.target.value)}
-          required
-        />
-        <input
-          className={`w-full h-[40px] border border-[#f63b60] text-center text-[#f63b60] rounded-[3px] mt-8 cursor-pointer`}
-          required
-          value="Apply code"
-          type="submit"
-        />
-      </form>
-    </div>
-  );
+    );
+  } catch (error) {
+    console.error("Rendering error:", error);
+    return <div>An error occurred while rendering the checkout page.</div>;
+  }
 };
 
 export default Checkout;
