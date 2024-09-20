@@ -7,14 +7,19 @@ import {
   AiFillYoutube,
   AiOutlineTwitter,
 } from "react-icons/ai";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import {
   footercompanyLinks,
+  categoriesData,
+  navItems,
   footerProductLinks,
   footerSupportLinks,
 } from "../../static/data";
+import { FaApple, FaGooglePlay } from "react-icons/fa";
 
-const Footer = () => {
+const Footer = ({ active }) => {
+  const navigate = useNavigate();
+
   return (
     <div className="bg-[#000] text-white">
       <div className="md:flex md:justify-between md:items-center sm:px-12 px-4 bg-[#342ac8] py-7">
@@ -65,7 +70,7 @@ const Footer = () => {
           </div>
         </ul>
 
-        <ul className="text-center sm:text-start">
+        {/* <ul className="text-center sm:text-start">
           <h1 className="mb-1 font-semibold">Company</h1>
           {footerProductLinks.map((link, index) => (
             <li key={index}>
@@ -77,35 +82,66 @@ const Footer = () => {
               </Link>
             </li>
           ))}
-        </ul>
+        </ul> */}
 
         <ul className="text-center sm:text-start">
           <h1 className="mb-1 font-semibold">Shop</h1>
-          {footercompanyLinks.map((link, index) => (
-            <li key={index}>
-              <Link
-                className="text-gray-400 hover:text-teal-400 duration-300
+
+          <li>
+            <div
+              className="text-gray-400 hover:text-teal-400 duration-300
+                   text-sm cursor-pointer leading-6">
+              {categoriesData &&
+                categoriesData.map((i) => {
+                  const handleSubmit = (i) => {
+                    navigate(`/products?category=${i.title}`);
+                  };
+                  return (
+                    <div
+                      className="text-gray-400 hover:text-teal-400 duration-300
                    text-sm cursor-pointer leading-6"
-                to={link.link}>
-                {link.name}
-              </Link>
-            </li>
-          ))}
+                      key={i.id}
+                      onClick={() => handleSubmit(i)}>
+                      <span className={`text-[15px] leading-[1.3]`}>
+                        {i.title}
+                      </span>
+                    </div>
+                  );
+                })}
+            </div>
+          </li>
         </ul>
 
         <ul className="text-center sm:text-start">
           <h1 className="mb-1 font-semibold">Support</h1>
-          {footerSupportLinks.map((link, index) => (
-            <li key={index}>
-              <Link
-                className="text-gray-400 hover:text-teal-400 duration-300
-                   text-sm cursor-pointer leading-6"
-                to={link.link}>
-                {link.name}
-              </Link>
-            </li>
-          ))}
+          {footerSupportLinks &&
+            footerSupportLinks.map((i) => (
+              <div>
+                <Link
+                  to={i.url}
+                  className="text-gray-400 hover:text-teal-400 duration-300
+                  text-sm cursor-pointer leading-6 text-center">
+                  {i.title}
+                </Link>
+              </div>
+            ))}
         </ul>
+        <div className="text-center sm:text-start">
+          <h4 className="text-[30px] font-semibold mb-4">Coming Soon</h4>
+          <p className="text-gray-400 mb-4">
+            Get our app, coming soon to your favorite app store!
+          </p>
+          <div className="flex flex-col sm:flex-row items-center justify-center sm:justify-start gap-4">
+            <button className="bg-white text-black py-2 px-4 rounded-lg flex items-center justify-center w-48">
+              <FaApple className="mr-2" size={20} />
+              <span>App Store</span>
+            </button>
+            <button className="bg-white text-black py-2 px-4 rounded-lg flex items-center justify-center w-48">
+              <FaGooglePlay className="mr-2" size={20} />
+              <span>Google Play</span>
+            </button>
+          </div>
+        </div>
       </div>
 
       <div
@@ -119,10 +155,10 @@ const Footer = () => {
         {/* <span>© 2024 OrderzShop. All rights reserved.</span> */}
         <span>Terms · Privacy Policy</span>
         <div className="sm:block flex items-center justify-center w-full">
-          <img
-            src="https://hamart-shop.vercel.app/_next/image?url=%2F_next%2Fstatic%2Fmedia%2Ffooter-payment.a37c49ac.png&w=640&q=75"
-            alt=""
-          />
+          <h5>
+            For now, we have only cash on delivery
+            <span className="text-[#ffbb38]"> (COD)</span> system.
+          </h5>
         </div>
       </div>
     </div>

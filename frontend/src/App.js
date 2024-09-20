@@ -23,6 +23,8 @@ import {
   OrderDetailsPage,
   TrackOrderPage,
   UserInbox,
+  ChatWithUs,
+  AllVendors
 } from "./routes/Routes.js";
 import {
   ShopDashboardPage,
@@ -111,6 +113,8 @@ const App = () => {
         <Route path="/product/:id" element={<ProductDetailsPage />} />
         <Route path="/best-selling" element={<BestSellingPage />} />
         <Route path="/events" element={<EventsPage />} />
+        <Route path="/chat-with-us" element={<ChatWithUs />} />
+        <Route path="/all-stores" element={<AllVendors />} />
         <Route path="/faq" element={<FAQPage />} />
         <Route
           path="/checkout"

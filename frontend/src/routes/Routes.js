@@ -1,3 +1,5 @@
+/** @format */
+
 import LoginPage from "../pages/Login";
 import SignupPage from "../pages/SignupPage";
 import ActivationPage from "../pages/ActivationPage";
@@ -17,25 +19,28 @@ import ShopLoginPage from "../pages/ShopLoginPage";
 import OrderDetailsPage from "../pages/OrderDetailsPage";
 import TrackOrderPage from "../pages/TrackOrderPage";
 import UserInbox from "../pages/UserInbox.jsx";
-
-export { 
-    LoginPage,
-    SignupPage,
-    ActivationPage,
-    HomePage,
-    ProductsPage,
-    BestSellingPage,
-    EventsPage,
-    FAQPage,
-    CheckoutPage,
-    PaymentPage,
-    OrderSuccessPage,
-    ProductDetailsPage,
-    ProfilePage,
-    ShopCreatePage,
-    SellerActivationPage,
-    ShopLoginPage,
-    OrderDetailsPage,
-    TrackOrderPage,
-    UserInbox
+import ChatWithUs from "../pages/ChatWithUs";
+import AllVendors from "../pages/AllVendors";
+export {
+  LoginPage,
+  SignupPage,
+  ActivationPage,
+  HomePage,
+  ProductsPage,
+  BestSellingPage,
+  EventsPage,
+  FAQPage,
+  CheckoutPage,
+  PaymentPage,
+  OrderSuccessPage,
+  ProductDetailsPage,
+  ProfilePage,
+  ShopCreatePage,
+  SellerActivationPage,
+  ShopLoginPage,
+  OrderDetailsPage,
+  TrackOrderPage,
+  UserInbox,
+  ChatWithUs,
+  AllVendors,
 };

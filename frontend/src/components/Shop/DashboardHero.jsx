@@ -1,3 +1,5 @@
+/** @format */
+
 import React, { useEffect, useState } from "react";
 import { AiOutlineArrowRight, AiOutlineMoneyCollect } from "react-icons/ai";
 import styles from "../../styles/styles";
@@ -21,7 +23,9 @@ const DashboardHero = () => {
   }, [dispatch]);
 
   // Calculate the total earnings (without deductions)
-  const totalEarnings = orders?.reduce((acc, order) => acc + order.totalPrice, 0).toFixed(2);
+  const totalEarnings = orders
+    ?.reduce((acc, order) => acc + order.totalPrice, 0)
+    .toFixed(2);
 
   const availableBalance = seller?.availableBalance.toFixed(2);
 
@@ -95,10 +99,13 @@ const DashboardHero = () => {
         {/* Total Earnings without cutting */}
         <div className="w-full mb-4 800px:w-[30%] min-h-[20vh] bg-white shadow rounded px-2 py-5">
           <div className="flex items-center">
-            <AiOutlineMoneyCollect size={30} className="mr-2" fill="#00000085" />
+            <AiOutlineMoneyCollect
+              size={30}
+              className="mr-2"
+              fill="#00000085"
+            />
             <h3
-              className={`${styles.productTitle} !text-[18px] leading-5 !font-[400] text-[#00000085]`}
-            >
+              className={`${styles.productTitle} !text-[18px] leading-5 !font-[400] text-[#00000085]`}>
               Total Earnings
             </h3>
           </div>
@@ -111,8 +118,7 @@ const DashboardHero = () => {
           <div className="flex items-center">
             <MdBorderClear size={30} className="mr-2" fill="#00000085" />
             <h3
-              className={`${styles.productTitle} !text-[18px] leading-5 !font-[400] text-[#00000085]`}
-            >
+              className={`${styles.productTitle} !text-[18px] leading-5 !font-[400] text-[#00000085]`}>
               All Orders
             </h3>
           </div>
@@ -126,10 +132,13 @@ const DashboardHero = () => {
 
         <div className="w-full mb-4 800px:w-[30%] min-h-[20vh] bg-white shadow rounded px-2 py-5">
           <div className="flex items-center">
-            <AiOutlineMoneyCollect size={30} className="mr-2" fill="#00000085" />
+            <AiOutlineMoneyCollect
+              size={30}
+              className="mr-2"
+              fill="#00000085"
+            />
             <h3
-              className={`${styles.productTitle} !text-[18px] leading-5 !font-[400] text-[#00000085]`}
-            >
+              className={`${styles.productTitle} !text-[18px] leading-5 !font-[400] text-[#00000085]`}>
               All Products
             </h3>
           </div>

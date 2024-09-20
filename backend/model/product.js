@@ -15,6 +15,11 @@ const productSchema = new mongoose.Schema({
     type: String,
     required: [true, "Please enter your product category!"],
   },
+  subcategory: {
+    // New field for subcategories
+    type: String,
+    required: false,
+  },
   type: {
     type: String,
     required: [true, "Product type is a required field!"],

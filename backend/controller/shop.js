@@ -44,15 +44,26 @@ router.post(
 
       const activationUrl = `http://localhost:3000/seller/activation/${activationToken}`;
 
+      // Custom message for the email
+      const customMessage =
+        `Please deposit <strong>Rs.3000</strong> in your EasyPaisa account for account activation. Otherwise, your account will be deactivated within 24 hours.`;
+
+      // WhatsApp number to send the payment details
+      const whatsappNumber = "+92-312-444-1798"; // Replace with your actual WhatsApp number
+
       try {
         await sendMail({
           email: seller.email,
           subject: "Activate your Shop",
-          message: `Hello ${seller.name}, please click on the link to activate your shop: ${activationUrl}`,
+          name: `${seller.name}`,
+          activationUrl: `${activationUrl}`,
+          customMessage: customMessage, // Custom message
+          whatsappNumber: whatsappNumber, // WhatsApp number
+          templateType: "vendor",
         });
         res.status(201).json({
           success: true,
-          message: `please check your email:- ${seller.email} to activate your shop!`,
+          message: `Please check your email: ${seller.email} to activate your shop!`,
         });
       } catch (error) {
         return next(new ErrorHandler(error.message, 500));
@@ -170,10 +181,14 @@ router.get(
   "/get-shop-avatars",
   catchAsyncErrors(async (req, res, next) => {
     try {
-      const shops = await Shop.find().select("avatar"); // Fetch only the avatar field
+      const shops = await Shop.find().select("name avatar _id"); // Fetch the name, avatar, and ID field
       res.status(200).json({
         success: true,
-        avatars: shops.map((shop) => shop.avatar),
+        shops: shops.map((shop) => ({
+          name: shop.name, // Include shop name
+          avatar: shop.avatar,
+          shopId: shop._id,
+        })),
       });
     } catch (error) {
       return next(new ErrorHandler(error.message, 500));
