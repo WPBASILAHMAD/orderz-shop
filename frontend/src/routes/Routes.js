@@ -21,6 +21,9 @@ import TrackOrderPage from "../pages/TrackOrderPage";
 import UserInbox from "../pages/UserInbox.jsx";
 import ChatWithUs from "../pages/ChatWithUs";
 import AllVendors from "../pages/AllVendors";
+import TermsofService from "../pages/TermsofService";
+import PrivacyPolicy from "../pages/PrivacyPolicy";
+
 export {
   LoginPage,
   SignupPage,
@@ -43,4 +46,6 @@ export {
   UserInbox,
   ChatWithUs,
   AllVendors,
+  TermsofService,
+  PrivacyPolicy,
 };

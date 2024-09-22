@@ -36,9 +36,11 @@ const ProductDetails = ({ data }) => {
   const [count, setCount] = useState(1);
   const [click, setClick] = useState(false);
   const [select, setSelect] = useState(0);
-  const [variations, setVariations] = useState([]);
   const [showShareIcons, setShowShareIcons] = useState(false);
   const [shippingCost, setShippingCost] = useState(0);
+  const [reviewsToShow, setReviewsToShow] = useState(8); // Show initial 2 reviews
+  const [loadMoreCount, setLoadMoreCount] = useState(10); // Load 10 reviews on click
+
   const navigate = useNavigate();
   const dispatch = useDispatch();
 
@@ -48,17 +50,6 @@ const ProductDetails = ({ data }) => {
       setClick(true);
     } else {
       setClick(false);
-    }
-
-    if (data && data._id) {
-      axios
-        .get(`${server}/variation/${data._id}`)
-        .then((response) => {
-          setVariations(response.data.variations);
-        })
-        .catch((error) => {
-          toast.error("Failed to fetch variations");
-        });
     }
   }, [data, wishlist]);
 
@@ -70,6 +61,10 @@ const ProductDetails = ({ data }) => {
     if (count > 1) {
       setCount(count - 1);
     }
+  };
+
+  const loadMoreReviews = () => {
+    setReviewsToShow(reviewsToShow + loadMoreCount); // Load 10 more reviews on each click
   };
 
   const removeFromWishlistHandler = (data) => {
@@ -87,16 +82,15 @@ const ProductDetails = ({ data }) => {
     if (isItemExists) {
       toast.error("Item already in cart!");
     } else {
-      if (data.stock < 1) {
-        toast.error("Product stock limited!");
-      } else {
-        const shippingCost = data.isFreeShipping ? 0 : data.shippingCost || 0;
-        const cartData = { ...data, qty: count, shippingCost: shippingCost };
-        dispatch(addTocart(cartData));
-        toast.success("Item added to cart successfully!");
-      }
+      const cartData = {
+        ...data,
+        qty: count,
+      };
+      dispatch(addTocart(cartData));
+      toast.success("Item added to cart successfully!");
     }
   };
+
   // Render the shipping cost
   const renderShippingCost = () => {
     if (data.isFreeShipping) {
@@ -173,31 +167,33 @@ const ProductDetails = ({ data }) => {
   const avg = totalRatings / totalReviewsLength || 0;
 
   const averageRating = avg.toFixed(2);
+  const allReviews =
+    products && products.map((product) => product.reviews).flat();
 
   return (
-    <div className="bg-white p-6 rounded-lg shadow-lg">
+    <div className="bg-white p-8 rounded-lg  w-full">
       {data ? (
-        <div className={`${styles.section} w-full md:w-4/5 lg:w-4/5 mx-auto`}>
+        <div className={`${styles.section} w-11/12  mx-auto`}>
           <div className="flex flex-col lg:flex-row space-y-8 lg:space-y-0 lg:space-x-12">
             {/* Product Image */}
             <div className="lg:w-1/2">
               <img
                 src={`${data && data.images[select]?.url}`}
                 alt={data.name}
-                className="w-full rounded-lg object-cover transition-transform transform hover:scale-105"
+                className="w-9/12 rounded-lg object-contain transition-transform transform hover:scale-105"
               />
               <div className="flex mt-4 space-x-3 overflow-x-auto">
                 {data &&
                   data.images.map((i, index) => (
                     <div
                       className={`${
-                        select === index ? "border-2 border-teal-400" : ""
+                        select === index ? "border-2 border-[#256aff]" : ""
                       } cursor-pointer rounded-lg`}
                       key={index}>
                       <img
                         src={`${i?.url}`}
                         alt={`Thumbnail ${index + 1}`}
-                        className="h-[100px] rounded-lg object-cover transition-transform transform hover:scale-105"
+                        className="h-[100px] rounded-lg object-contain transition-transform transform hover:scale-105"
                         onClick={() => setSelect(index)}
                       />
                     </div>
@@ -215,57 +211,21 @@ const ProductDetails = ({ data }) => {
               </p>
 
               <div className="flex items-center space-x-3 mb-6">
-                <h4 className="text-2xl text-teal-500 font-semibold">
-                  Rs: {data.discountPrice}
+                <h4 className="text-2xl text-[#256aff]  font-semibold">
+                  Rs:
+                  {data.discountPrice ? data.discountPrice : data.originalPrice}
                 </h4>
-                <h3 className="text-lg text-gray-400 line-through">
-                  {data.originalPrice ? `Rs: ${data.originalPrice}` : null}
-                </h3>
-              </div>
-
-              {/* Display shipping cost */}
-              <div className="shipping-section">{renderShippingCost()}</div>
-
-              {/* Variations Display */}
-              <div className="mb-6">
-                <h4 className="text-xl font-semibold mb-2 text-gray-800">
-                  Available Variations
-                </h4>
-                {variations.length > 0 ? (
-                  <ul className="space-y-2">
-                    {variations.map((variation) => (
-                      <li
-                        key={variation._id}
-                        className="border rounded-lg p-4 bg-gray-50 hover:bg-gray-100 transition-colors">
-                        <div className="text-gray-700">
-                          <strong>Attributes:</strong>{" "}
-                          {variation.attributes
-                            .map(
-                              (attr) =>
-                                `${attr.attributeId.name}: ${attr.value}`
-                            )
-                            .join(", ")}
-                        </div>
-                        <div className="text-gray-700">
-                          <strong>Price:</strong> Rs {variation.price}
-                        </div>
-                        <div className="text-gray-700">
-                          <strong>Stock:</strong> {variation.stock}
-                        </div>
-                      </li>
-                    ))}
-                  </ul>
-                ) : (
-                  <p className="text-gray-500">
-                    No variations available for this product.
-                  </p>
+                {data.discountPrice && (
+                  <h3 className="text-lg text-gray-400 line-through">
+                    Rs: {data.originalPrice}
+                  </h3>
                 )}
               </div>
 
               <div className="flex items-center space-x-4 mb-6">
                 <div className="flex items-center space-x-1">
                   <button
-                    className="bg-teal-500 text-white rounded-l px-4 py-2 hover:bg-teal-600 transition duration-300"
+                    className="bg-[#256aff] text-white rounded-l px-4 py-2  transition duration-300"
                     onClick={decrementCount}>
                     -
                   </button>
@@ -273,7 +233,7 @@ const ProductDetails = ({ data }) => {
                     {count}
                   </span>
                   <button
-                    className="bg-teal-500 text-white rounded-r px-4 py-2 hover:bg-teal-600 transition duration-300"
+                    className="bg-[#256aff] text-white rounded-r px-4 py-2  transition duration-300"
                     onClick={incrementCount}>
                     +
                   </button>
@@ -299,92 +259,101 @@ const ProductDetails = ({ data }) => {
 
               <div className="flex space-x-4 mb-6">
                 <button
-                  className="bg-teal-500 text-white rounded-lg px-6 py-3 hover:bg-teal-600 transition duration-300"
+                  className="bg-[#256aff] text-white rounded px-8 py-3 font-semibold shadow hover:bg-[#004aad] transition duration-300"
                   onClick={() => addToCartHandler(data._id)}>
-                  <AiOutlineShoppingCart size={20} className="inline mr-2" />
+                  <AiOutlineShoppingCart className="inline-block mr-2" />
                   Add to Cart
                 </button>
                 <button
-                  className="bg-gray-100 text-gray-700 rounded-lg px-6 py-3 hover:bg-gray-200 transition duration-300"
+                  className="bg-[#d3d3d3] text-black rounded px-8 py-3 font-semibold shadow hover:text-white hover:bg-[#636363] transition duration-300"
                   onClick={handleMessageSubmit}>
-                  <AiOutlineMessage size={20} className="inline mr-2" />
-                  Contact Seller
+                  <AiOutlineMessage className="inline-block mr-2" />
+                  Send Message
                 </button>
               </div>
 
-              {/* Shop Preview */}
-              <Link to={`/shop/preview/${data?.shop._id}`}>
-                <div className="mt-6 flex items-center space-x-4 p-4 border-t border-gray-200">
-                  <img
-                    src={`${data?.shop?.avatar?.url}`}
-                    alt="Shop Avatar"
-                    className="w-[50px] h-[50px] rounded-full mr-2"
-                  />
-                  <div>
-                    <h4 className="text-lg font-semibold text-gray-900">
-                      {data.shop.name}
-                    </h4>
-                    <p className="text-gray-600">Shop Owner</p>
+              {renderShippingCost()}
+
+              {/* Share Buttons */}
+              <div className="mt-8">
+                <button
+                  onClick={() => setShowShareIcons(!showShareIcons)}
+                  className="bg-gray-200 px-4 py-2 rounded-lg text-gray-700 font-semibold hover:bg-gray-300 transition">
+                  <AiOutlineShareAlt size={24} className="inline-block mr-2" />
+                  Share
+                </button>
+                {showShareIcons && (
+                  <div className="mt-4 flex space-x-4">
+                    <FaFacebookF
+                      size={24}
+                      className="text-blue-600 cursor-pointer hover:scale-110 transition"
+                      onClick={() => handleShareClick("facebook")}
+                    />
+                    <FaTwitter
+                      size={24}
+                      className="text-blue-400 cursor-pointer hover:scale-110 transition"
+                      onClick={() => handleShareClick("twitter")}
+                    />
+                    <FaWhatsapp
+                      size={24}
+                      className="text-green-500 cursor-pointer hover:scale-110 transition"
+                      onClick={() => handleShareClick("whatsapp")}
+                    />
+                    <FaLinkedinIn
+                      size={24}
+                      className="text-blue-500 cursor-pointer hover:scale-110 transition"
+                      onClick={() => handleShareClick("linkedin")}
+                    />
                   </div>
-                </div>
-              </Link>
-
-              {/* Share Button */}
-              <button
-                className="mt-6 text-teal-500 hover:text-teal-600"
-                onClick={() => setShowShareIcons(!showShareIcons)}>
-                <AiOutlineShareAlt size={24} />
-                Share
-              </button>
-
-              {showShareIcons && (
-                <div className="mt-4 flex space-x-4">
-                  <FaFacebookF
-                    size={24}
-                    className="text-blue-600 cursor-pointer hover:scale-110 transition"
-                    onClick={() => handleShareClick("facebook")}
-                    title="Share on Facebook"
-                  />
-                  <FaTwitter
-                    size={24}
-                    className="text-blue-400 cursor-pointer hover:scale-110 transition"
-                    onClick={() => handleShareClick("twitter")}
-                    title="Share on Twitter"
-                  />
-                  <FaWhatsapp
-                    size={24}
-                    className="text-green-500 cursor-pointer hover:scale-110 transition"
-                    onClick={() => handleShareClick("whatsapp")}
-                    title="Share on WhatsApp"
-                  />
-                  <FaLinkedinIn
-                    size={24}
-                    className="text-blue-700 cursor-pointer hover:scale-110 transition"
-                    onClick={() => handleShareClick("linkedin")}
-                    title="Share on LinkedIn"
-                  />
-                </div>
-              )}
+                )}
+              </div>
             </div>
           </div>
 
-          <div className="mt-8">
-            <h2 className="text-3xl font-bold text-gray-900 mb-4">Reviews</h2>
-            {products && products.length > 0 ? (
-              <Ratings
-                avgRating={averageRating}
-                reviews={products.flatMap((p) => p.reviews)}
-              />
-            ) : (
-              <p className="text-gray-500">No reviews yet.</p>
-            )}
+          {/* Reviews */}
+          <div className="w-full mt-8">
+            <h1 className="text-2xl font-bold text-gray-900 mb-4">
+              Product Reviews
+            </h1>
+            <div className="w-full flex">
+              <div className="w-[30%] flex flex-col   border-r">
+                <h5 className="text-2xl font-bold text-[#256aff]">
+                  {averageRating}/5
+                </h5>
+                <Ratings rating={averageRating} />
+                <span className="text-sm text-gray-500 mt-1">
+                  ({totalReviewsLength} Ratings)
+                </span>
+              </div>
+              <div className="w-[70%]">
+                {allReviews.slice(0, reviewsToShow).map((review, index) => (
+                  <div className="w-full flex my-4 border-b pb-4" key={index}>
+                    <img
+                      src={review?.user?.avatar?.url}
+                      alt=""
+                      className="w-[50px] h-[50px] rounded-full"
+                    />
+                    <div className="pl-4">
+                      <div className="w-full flex items-center">
+                        <h1 className="font-[500] mr-3">{review.user.name}</h1>
+                        <Ratings rating={review.rating} />
+                      </div>
+                      <p className="text-gray-400 text-sm">{review.comment}</p>
+                    </div>
+                  </div>
+                ))}
+                {reviewsToShow < allReviews.length && (
+                  <button
+                    onClick={loadMoreReviews}
+                    className="text-blue-500 hover:underline">
+                    Load More Reviews
+                  </button>
+                )}
+              </div>
+            </div>
           </div>
         </div>
-      ) : (
-        <div className="text-center py-12 text-gray-600">
-          <h2 className="text-2xl font-semibold">Product not found</h2>
-        </div>
-      )}
+      ) : null}
     </div>
   );
 };

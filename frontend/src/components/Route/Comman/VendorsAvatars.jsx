@@ -59,7 +59,7 @@ const OurTrustedVendors = () => {
 
   // Handler to navigate to the shop's page
   const handleShopClick = (shopId) => {
-    navigate(`/shop/${shopId}`);
+    navigate(`/shop/preview/${shopId}`);
   };
 
   return (

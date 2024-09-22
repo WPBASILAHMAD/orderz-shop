@@ -12,7 +12,9 @@ import {
   Calendar,
   Edit,
   LogOut,
+  Clipboard,
 } from "lucide-react";
+import { toast } from "react-toastify";
 
 import { server } from "../../server";
 import { getAllProductsShop } from "../../redux/actions/product";
@@ -55,20 +57,32 @@ export default function ShopInfo({ isOwner = false }) {
     ) || 0;
   const averageRating = totalRatings / totalReviewsLength || 0;
 
+  const copyToClipboard = () => {
+    navigator.clipboard.writeText(id).then(() => {
+      toast.success("Shop ID copied to clipboard!");
+    });
+  };
+
   if (isLoading) return <Loader />;
 
   return (
     <div className="bg-gray-100 min-h-screen ">
-      <div className=" mx-auto bg-white rounded-lg shadow-lg overflow-hidden">
+      <div className="mx-auto bg-white rounded-lg shadow-lg overflow-hidden">
         <div className="relative h-50 pt-28 bg-gradient-to-r from-blue-500 to-purple-600">
           <img
             src={data.avatar?.url}
             alt={data.name}
-            className="absolute bottom-0 left-1/2 transform -translate-x-1/2 translate-y-1/2 w-32 h-32 rounded-full border-4  object-contain bg-white"
+            className="absolute bottom-0 left-1/2 transform -translate-x-1/2 translate-y-1/2 w-32 h-32 rounded-full border-4 object-contain bg-white"
           />
         </div>
         <div className="pt-16 pb-8 px-8 text-center">
           <h1 className="text-3xl font-bold text-gray-800">{data.name}</h1>
+          <div className="flex items-center justify-center mt-2">
+            <span className="text-gray-600"> {id}</span>
+            <button onClick={copyToClipboard} className="ml-2">
+              <Clipboard className="w-5 h-5 text-gray-500 hover:text-gray-700 transition-colors duration-200" />
+            </button>
+          </div>
           <p className="mt-2 text-gray-600">{data.description}</p>
         </div>
         <div className="border-t border-gray-200 px-8 py-6 grid grid-cols-1 md:grid-cols-1 gap-6">

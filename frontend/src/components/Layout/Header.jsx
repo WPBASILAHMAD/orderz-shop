@@ -18,6 +18,7 @@ import { useSelector } from "react-redux";
 import Cart from "../cart/Cart";
 import Wishlist from "../Wishlist/Wishlist";
 import { RxCross1 } from "react-icons/rx";
+import BlackLogo from "../../Assests/imgs/logo/orderzshop-black.png";
 
 const Header = ({ activeHeading }) => {
   const { isAuthenticated, user } = useSelector((state) => state.user);
@@ -59,13 +60,14 @@ const Header = ({ activeHeading }) => {
         <div className="hidden 800px:h-[50px] 800px:my-[20px] 800px:flex items-center justify-between">
           <div>
             <Link to="/">
-              <h3 className="text-3xl font-bold  font-Poppins ">
+              {/* <h3 className="text-3xl font-bold  font-Poppins ">
                 Orderz <span className="text-[#ffbb38]">Shop</span>
-              </h3>
-              {/* <img
-                src="https://shopo.quomodothemes.website/assets/images/logo.svg"
+              </h3> */}
+              <img
+                src={BlackLogo}
                 alt=""
-              /> */}
+                className=" cursor-pointer h-16 object-contain"
+              />
             </Link>
           </div>
           {/* search box */}
@@ -216,9 +218,9 @@ const Header = ({ activeHeading }) => {
           <div>
             <Link to="/">
               <img
-                src="https://shopo.quomodothemes.website/assets/images/logo.svg"
+                src={BlackLogo}
                 alt=""
-                className="mt-3 cursor-pointer"
+                className=" cursor-pointer  object-cover w-64"
               />
             </Link>
           </div>

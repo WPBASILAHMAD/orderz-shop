@@ -15,7 +15,7 @@ router.post(
   "/create-product",
   catchAsyncErrors(async (req, res, next) => {
     try {
-      const { shopId, shippingCost, isFreeShipping } = req.body;
+      const { shopId, shippingCost, isFreeShipping, attributes } = req.body; // Ensure attributes are included
 
       const shop = await Shop.findById(shopId);
       if (!shop) {
@@ -44,8 +44,9 @@ router.post(
         ...req.body,
         images: imagesLinks,
         shop,
-        shippingCost, // Set shipping cost
-        isFreeShipping, // Set free shipping flag
+        shippingCost,
+        isFreeShipping,
+        // attributes: attributes.map((attrId) => mongoose.Types.ObjectId(attrId)), // Map to ObjectId
       };
 
       const product = await Product.create(productData);
@@ -109,6 +110,12 @@ router.put(
         productId,
         req.body,
         {
+          ...req.body,
+          attributes: req.body.attributes.map((attrId) =>
+            mongoose.Types.ObjectId(attrId)
+          ), // Map to ObjectId
+        },
+        {
           new: true, // Return the updated document
           runValidators: true, // Run schema validators
         }
@@ -147,26 +154,29 @@ router.delete(
   isSeller,
   catchAsyncErrors(async (req, res, next) => {
     try {
-      const product = await Product.findById(req.params.id);
+      const productId = req.params.id;
+
+      // Find the product by ID
+      const product = await Product.findById(productId);
 
       if (!product) {
-        return next(new ErrorHandler("Product is not found with this id", 404));
+        return next(new ErrorHandler("Product not found with this ID", 404));
       }
 
-      for (let i = 0; 1 < product.images.length; i++) {
-        const result = await cloudinary.v2.uploader.destroy(
-          product.images[i].public_id
-        );
+      // Delete images from Cloudinary
+      for (let i = 0; i < product.images.length; i++) {
+        await cloudinary.v2.uploader.destroy(product.images[i].public_id);
       }
 
-      await product.remove();
+      // Delete the product
+      await Product.findByIdAndDelete(productId);
 
-      res.status(201).json({
+      res.status(200).json({
         success: true,
-        message: "Product Deleted successfully!",
+        message: "Product deleted successfully!",
       });
     } catch (error) {
-      return next(new ErrorHandler(error, 400));
+      return next(new ErrorHandler(error.message, 400));
     }
   })
 );
@@ -184,6 +194,57 @@ router.get(
       });
     } catch (error) {
       return next(new ErrorHandler(error, 400));
+    }
+  })
+);
+
+// get single product by id
+router.get(
+  "/get-product/:id",
+  catchAsyncErrors(async (req, res, next) => {
+    try {
+      const product = await Product.findById(req.params.id).populate(
+        "attributes"
+      ); // Populate attributes
+
+      if (!product) {
+        return next(new ErrorHandler("Product not found!", 404));
+      }
+
+      res.status(200).json({
+        success: true,
+        product,
+      });
+    } catch (error) {
+      return next(new ErrorHandler(error.message, 400));
+    }
+  })
+);
+
+// Add variations to a product
+router.post(
+  "/product/:id/variations",
+  isSeller,
+  catchAsyncErrors(async (req, res, next) => {
+    const productId = req.params.id;
+    const { variations } = req.body;
+
+    try {
+      const product = await Product.findById(productId);
+      if (!product) {
+        return next(new ErrorHandler("Product not found!", 404));
+      }
+
+      // Assuming product has a 'variations' field in its schema
+      product.variations = variations; // or you may want to push variations if they should be additive
+      await product.save();
+
+      res.status(201).json({
+        success: true,
+        product,
+      });
+    } catch (error) {
+      return next(new ErrorHandler(error.message, 400));
     }
   })
 );

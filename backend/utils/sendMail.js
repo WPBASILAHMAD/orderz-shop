@@ -23,46 +23,52 @@ const sendMail = async (options) => {
       <div style="width: 100%; font-family: Arial, sans-serif; color: #333; background-color: #f7f9fc; padding: 20px;">
         <div style="max-width: 600px; margin: 0 auto; background-color: white; border-radius: 10px; overflow: hidden; box-shadow: 0 6px 12px rgba(0,0,0,0.1);">
           
-          <!-- Header with Logo and ${
-            isVendor ? "Blue" : "Mustard Yellow"
-          } Background -->
+          <!-- Header with ${isVendor ? "Vendor Branding" : "User Branding"} -->
           <div style="background-color: ${
-            isVendor ? "#003366" : "#ffcc00"
+            isVendor ? "#003366" : "#00aaff"
           }; padding: 20px; text-align: center;">
-            <img src="https://img.freepik.com/free-vector/bird-colorful-logo-gradient-vector_343694-1365.jpg?size=338&ext=jpg&ga=GA1.1.1819120589.1726790400&semt=ais_hybrid" alt="Your Logo" style="max-width: 120px; border-radius: 50%;" />
+            <img src="${
+              isVendor
+                ? "https://www.seller.orderzshop.com/wp-content/uploads/2024/09/orderzshop_logo-HD-white.png"
+                : "https://www.seller.orderzshop.com/wp-content/uploads/2024/09/orderzshop_logo-HD.png"
+            }" alt="OrderzShop" style="max-width: 180px; border-radius: 50%;" />
           </div>
           
           <!-- Body Content -->
           <div style="padding: 30px;">
             <h1 style="font-size: 28px; color: ${
-              isVendor ? "#003366" : "#ffcc00"
+              isVendor ? "#003366" : "#00aaff"
             }; text-align: center; margin-bottom: 20px;">
               Welcome, ${options.name}!
             </h1>
             <p style="font-size: 16px; color: #555555; line-height: 1.7; margin-bottom: 25px;">
-              Thank you for becoming a vendor at <strong>OrderzShop</strong>! We’re excited to have you on board.
+              ${
+                isVendor
+                  ? "Thank you for becoming a vendor at <strong>OrderzShop</strong>! We’re excited to have you onboard."
+                  : "Thank you for joining <strong>OrderzShop</strong>! Please activate your account to get started."
+              }
             </p>
 
             <!-- Custom Message -->
             <p style="font-size: 16px; color: #333; line-height: 1.7; margin-bottom: 25px;">
-              Shop Name: <strong>${options.name}</strong><br/><br/>
-              <!-- EasyPaisa Account Info --> 
-              ${options.customMessage}
+              ${
+                isVendor
+                  ? `Shop Name: <strong>${options.name}</strong><br/><br/> ${options.customMessage}`
+                  : `Dear ${options.name}, please click the button below to activate your user account.`
+              }
             </p>
 
-            <!-- WhatsApp Instructions -->
-            <p style="font-size: 16px; color: #333; line-height: 1.7; margin-bottom: 25px;">
-              After making the payment, please send a screenshot along with your Shop ID to our WhatsApp number: 
-              <strong>${
-                options.whatsappNumber
-              }</strong>. We will review and activate your account.
-            </p>
-            
-            <!-- Button with Mustard Yellow Color -->
+            <!-- Activation Button -->
             <div style="text-align: center;">
               <a href="${
                 options.activationUrl
-              }" style="display: inline-block; background-color: #ffcc00; color: #003366; padding: 12px 25px; border-radius: 30px; text-decoration: none; font-size: 16px; font-weight: bold; box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);">Activate Vendor Account</a>
+              }" style="display: inline-block; background-color: ${
+      isVendor ? "#00aaff" : "#003366"
+    }; color: ${
+      isVendor ? "#003366" : "#00aaff"
+    }; padding: 12px 25px; border-radius: 30px; text-decoration: none; font-size: 16px; font-weight: bold; box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);">
+              ${isVendor ? "Activate Vendor Account" : "Activate Your Account"}
+              </a>
             </div>
             
             <p style="font-size: 14px; color: #777777; margin-top: 30px; text-align: center;">

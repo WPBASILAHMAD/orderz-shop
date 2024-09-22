@@ -17,9 +17,16 @@ const ShopCreate = () => {
   const [avatar, setAvatar] = useState();
   const [password, setPassword] = useState("");
   const [visible, setVisible] = useState(false);
+  const [agreedToPolicies, setAgreedToPolicies] = useState(false); // New state for the checkbox
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+
+    // Check if the user agreed to the policies
+    if (!agreedToPolicies) {
+      toast.error("You must agree to the Terms and Privacy Policy.");
+      return;
+    }
 
     axios
       .post(`${server}/shop/create-shop`, {
@@ -199,6 +206,29 @@ const ShopCreate = () => {
                   />
                 </div>
               </div>
+
+              {/* Checkbox for Terms and Privacy Policy */}
+              <div className="flex items-start">
+                <input
+                  type="checkbox"
+                  id="terms"
+                  className="mt-1 mr-2"
+                  checked={agreedToPolicies}
+                  onChange={() => setAgreedToPolicies(!agreedToPolicies)}
+                  required
+                />
+                <label htmlFor="terms" className="text-sm text-gray-700">
+                  I agree to the{" "}
+                  <Link to="/terms-of-service" className="text-blue-600">
+                    Terms and Conditions
+                  </Link>{" "}
+                  and{" "}
+                  <Link to="/privacy-policy" className="text-blue-600">
+                    Privacy Policy
+                  </Link>
+                </label>
+              </div>
+
               <button
                 type="submit"
                 className="w-full py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700">

@@ -16,6 +16,7 @@ import {
   footerSupportLinks,
 } from "../../static/data";
 import { FaApple, FaGooglePlay } from "react-icons/fa";
+import WhiteLogo from "../../Assests/imgs/logo/orderzshop-white.png";
 
 const Footer = ({ active }) => {
   const navigate = useNavigate();
@@ -43,14 +44,11 @@ const Footer = ({ active }) => {
       </div>
       <div className="grid grid-cols-1 sm:gird-cols-3 lg:grid-cols-4 gap-6 sm:px-8 px-5 py-16 sm:text-center">
         <ul className="px-5 text-center sm:text-start flex sm:block flex-col items-center">
-          {/* <img
-            src="https://shopo.quomodothemes.website/assets/images/logo.svg"
+          <img
+            src={WhiteLogo}
             alt=""
-            style={{ filter: "brightness(0) invert(1)" }}
-          /> */}
-          <h3 className="text-3xl font-bold  font-Poppins ">
-            Orderz <span className="text-[#ffbb38]">Shop</span>
-          </h3>
+            className=" cursor-pointer h-16 object-contain "
+          />
           <br />
           <p>The home and elements needeed to create beatiful products.</p>
           <div className="flex items-center mt-[15px]">
@@ -153,7 +151,15 @@ const Footer = ({ active }) => {
         </h6>
 
         {/* <span>© 2024 OrderzShop. All rights reserved.</span> */}
-        <span>Terms · Privacy Policy</span>
+        <span>
+          <a href="/terms-of-service" className="text-[#ffbb38]">
+            Terms and Conditions
+          </a>
+          -
+          <a href="/privacy-policy" className="text-[#ffbb38]">
+            Privacy Policy
+          </a>
+        </span>
         <div className="sm:block flex items-center justify-center w-full">
           <h5>
             For now, we have only cash on delivery

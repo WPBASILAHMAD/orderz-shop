@@ -1,22 +1,31 @@
 /** @format */
 
 const express = require("express");
-const Variation = require("../model/variation");
+const Variation = require("../model/variations");
+const Product = require("../model/product");
 const catchAsyncErrors = require("../middleware/catchAsyncErrors");
-const router = express.Router();
 const ErrorHandler = require("../utils/ErrorHandler");
+const router = express.Router();
 
 // Create a new variation
 router.post(
   "/create",
   catchAsyncErrors(async (req, res, next) => {
-    const { productId, attributes, price, stock } = req.body;
+    const { productId, attributes, sku, stock, price } = req.body;
 
+    // Validate product ID
+    const product = await Product.findById(productId);
+    if (!product) {
+      return next(new ErrorHandler("Product Id is invalid!", 400));
+    }
+
+    // Create new variation
     const newVariation = await Variation.create({
-      productId,
+      product: productId,
       attributes,
-      price,
+      sku,
       stock,
+      price,
     });
 
     res.status(201).json({
@@ -32,14 +41,15 @@ router.get(
   catchAsyncErrors(async (req, res, next) => {
     const { productId } = req.params;
 
-    const variations = await Variation.find({ productId }).populate(
-      "attributes.attributeId"
-    );
-
-    if (!variations) {
-      return next(new ErrorHandler("No variations found", 404));
+    // Validate product ID
+    const product = await Product.findById(productId);
+    if (!product) {
+      return next(new ErrorHandler("Product Id is invalid!", 400));
     }
 
+    const variations = await Variation.find({ product: productId }).populate(
+      "attributes.attribute"
+    );
     res.status(200).json({
       success: true,
       variations,
@@ -52,17 +62,19 @@ router.put(
   "/update/:id",
   catchAsyncErrors(async (req, res, next) => {
     const { id } = req.params;
-    const { attributes, price, stock } = req.body;
+    const { attributes, sku, stock, price } = req.body;
 
+    // Find and update the variation
     const updatedVariation = await Variation.findByIdAndUpdate(
       id,
       {
         attributes,
-        price,
+        sku,
         stock,
+        price,
       },
       { new: true, runValidators: true }
-    );
+    ).populate("attributes.attribute");
 
     if (!updatedVariation) {
       return next(new ErrorHandler("Variation not found", 404));

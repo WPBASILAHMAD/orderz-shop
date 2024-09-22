@@ -18,10 +18,10 @@ const Cart = ({ setOpenCart }) => {
     dispatch(removeFromCart(data));
   };
 
-  const totalPrice = cart.reduce(
-    (acc, item) => acc + item.qty * item.discountPrice,
-    0
-  );
+  const totalPrice = cart.reduce((acc, item) => {
+    const price = item.discountPrice ? item.discountPrice : item.originalPrice;
+    return acc + item.qty * price;
+  }, 0);
 
   const quantityChangeHandler = (data) => {
     dispatch(addTocart(data));
@@ -59,7 +59,7 @@ const Cart = ({ setOpenCart }) => {
                 </h5>
               </div>
 
-              {/* cart Single Items */}
+              {/* Cart Single Items */}
               <br />
               <div className="w-full border-t">
                 {cart &&
@@ -75,11 +75,11 @@ const Cart = ({ setOpenCart }) => {
             </div>
 
             <div className="px-5 mb-3">
-              {/* checkout buttons */}
+              {/* Checkout buttons */}
               <Link to="/checkout">
                 <div
-                  className={`h-[45px] flex items-center justify-center w-[100%] bg-[#e44343] rounded-[5px]`}>
-                  <h1 className="text-[#fff] text-[18px] font-[600]">
+                  className={`h-[45px] flex items-center justify-center w-[100%] bg-[#fcb532] rounded-[5px]`}>
+                  <h1 className="text-[#000] text-[18px] font-[600]">
                     Checkout Now (Rs: {totalPrice})
                   </h1>
                 </div>
@@ -94,7 +94,9 @@ const Cart = ({ setOpenCart }) => {
 
 const CartSingle = ({ data, quantityChangeHandler, removeFromCartHandler }) => {
   const [value, setValue] = useState(data.qty);
-  const totalPrice = data.discountPrice * value;
+  
+  // Calculate total price based on available prices
+  const totalPrice = (data.discountPrice ? data.discountPrice : data.originalPrice) * value;
 
   const increment = (data) => {
     if (data.stock < value) {
@@ -117,7 +119,7 @@ const CartSingle = ({ data, quantityChangeHandler, removeFromCartHandler }) => {
       <div className="w-full flex items-center">
         <div>
           <div
-            className={`bg-[#e44343] border border-[#e4434373] rounded-full w-[25px] h-[25px] ${styles.noramlFlex} justify-center cursor-pointer`}
+            className={`bg-[#2e70ff] border border-[#435be473] rounded-full w-[25px] h-[25px] ${styles.noramlFlex} justify-center cursor-pointer`}
             onClick={() => increment(data)}>
             <HiPlus size={18} color="#fff" />
           </div>
@@ -140,10 +142,10 @@ const CartSingle = ({ data, quantityChangeHandler, removeFromCartHandler }) => {
         <div className="pl-[5px]">
           <h1>{data.name}</h1>
           <h4 className="font-[400] text-[15px] text-[#00000082]">
-            Rs{data.discountPrice} * {value}
+            Rs{data.discountPrice ? data.discountPrice : data.originalPrice} * {value}
           </h4>
-          <h4 className="font-[600] text-[17px] pt-[3px] text-[#d02222] font-Roboto">
-            Rs:{totalPrice}
+          <h4 className="font-[600] text-[17px] pt-[3px] text-[#2e70ff] font-Roboto">
+            Rs: {totalPrice}
           </h4>
         </div>
         <RxCross1
@@ -156,3 +158,4 @@ const CartSingle = ({ data, quantityChangeHandler, removeFromCartHandler }) => {
 };
 
 export default Cart;
+

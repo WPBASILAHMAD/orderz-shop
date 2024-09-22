@@ -3,33 +3,38 @@
 const mongoose = require("mongoose");
 
 const variationSchema = new mongoose.Schema({
-  productId: {
+  product: {
     type: mongoose.Schema.Types.ObjectId,
-    ref: "Product", // assuming you have a Product model
+    ref: "Product",
     required: true,
   },
   attributes: [
     {
-      attributeId: {
+      attribute: {
         type: mongoose.Schema.Types.ObjectId,
-        ref: "Attribute", // Reference to the Attribute model
+        ref: "Attribute",
         required: true,
       },
       value: {
-        type: String, // This stores the option value from the attribute
+        type: String,
         required: true,
       },
     },
   ],
-  price: {
-    type: Number,
+  sku: {
+    type: String,
     required: true,
+    unique: true,
   },
   stock: {
+    type: Number,
+    required: true,
+    default: 0,
+  },
+  price: {
     type: Number,
     required: true,
   },
 });
 
-const Variation = mongoose.model("Variation", variationSchema);
-module.exports = Variation;
+module.exports = mongoose.model("Variation", variationSchema);

@@ -1,121 +1,130 @@
+/** @format */
+
+import React, { useEffect, useState } from "react";
 import { Button } from "@material-ui/core";
-import { DataGrid } from "@material-ui/data-grid";
-import React, { useEffect } from "react";
-import { AiOutlineDelete, AiOutlineEye } from "react-icons/ai";
+import { AiOutlineDelete, AiOutlineEye, AiOutlineEdit } from "react-icons/ai";
 import { useDispatch, useSelector } from "react-redux";
 import { Link } from "react-router-dom";
-import { getAllProductsShop } from "../../redux/actions/product";
-import { deleteProduct } from "../../redux/actions/product";
+import {
+  getAllProductsShop,
+  deleteProduct,
+  updateProduct,
+} from "../../redux/actions/product";
 import Loader from "../Layout/Loader";
+import ConfirmDeletePopup from "../Route/Comman/ConfirmDeletePopup";
+import EditProductPopup from "../Route/Comman/EditProductPopup"; // The new popup component
 
 const AllProducts = () => {
   const { products, isLoading } = useSelector((state) => state.products);
   const { seller } = useSelector((state) => state.seller);
-
   const dispatch = useDispatch();
+
+  const [isDeletePopupOpen, setDeletePopupOpen] = useState(false);
+  const [isEditPopupOpen, setEditPopupOpen] = useState(false);
+  const [productIdToDelete, setProductIdToDelete] = useState(null);
+  const [productToEdit, setProductToEdit] = useState(null); // Store product data for editing
 
   useEffect(() => {
     dispatch(getAllProductsShop(seller._id));
-  }, [dispatch]);
+  }, [dispatch, seller._id]);
 
   const handleDelete = (id) => {
-    dispatch(deleteProduct(id));
-    window.location.reload();
+    setProductIdToDelete(id);
+    setDeletePopupOpen(true);
   };
 
-  const columns = [
-    { field: "id", headerName: "Product Id", minWidth: 150, flex: 0.7 },
-    {
-      field: "name",
-      headerName: "Name",
-      minWidth: 180,
-      flex: 1.4,
-    },
-    {
-      field: "price",
-      headerName: "Price",
-      minWidth: 100,
-      flex: 0.6,
-    },
-    {
-      field: "Stock",
-      headerName: "Stock",
-      type: "number",
-      minWidth: 80,
-      flex: 0.5,
-    },
-
-    {
-      field: "sold",
-      headerName: "Sold out",
-      type: "number",
-      minWidth: 130,
-      flex: 0.6,
-    },
-    {
-      field: "Preview",
-      flex: 0.8,
-      minWidth: 100,
-      headerName: "",
-      type: "number",
-      sortable: false,
-      renderCell: (params) => {
-        return (
-          <>
-            <Link to={`/product/${params.id}`}>
-              <Button>
-                <AiOutlineEye size={20} />
-              </Button>
-            </Link>
-          </>
-        );
-      },
-    },
-    {
-      field: "Delete",
-      flex: 0.8,
-      minWidth: 120,
-      headerName: "",
-      type: "number",
-      sortable: false,
-      renderCell: (params) => {
-        return (
-          <>
-            <Button onClick={() => handleDelete(params.id)}>
-              <AiOutlineDelete size={20} />
-            </Button>
-          </>
-        );
-      },
-    },
-  ];
-
-  const row = [];
-
-  products &&
-    products.forEach((item) => {
-      row.push({
-        id: item._id,
-        name: item.name,
-        price: "Rs: " + item.discountPrice,
-        Stock: item.stock,
-        sold: item?.sold_out,
+  const confirmDelete = () => {
+    if (productIdToDelete) {
+      dispatch(deleteProduct(productIdToDelete)).then(() => {
+        dispatch(getAllProductsShop(seller._id));
       });
-    });
+    }
+    setDeletePopupOpen(false);
+  };
 
+  const handleEdit = (product) => {
+    setProductToEdit(product);
+    setEditPopupOpen(true);
+  };
+
+  const confirmEdit = (updatedProduct) => {
+    if (productToEdit) {
+      dispatch(updateProduct(productToEdit.id, updatedProduct)).then(() => {
+        dispatch(getAllProductsShop(seller._id));
+      });
+    }
+    setEditPopupOpen(false);
+  };
+
+  const row =
+    products?.map((item) => ({
+      id: item._id,
+      name: item.name,
+      price: item.discountPrice
+        ? "Rs: " + item.discountPrice
+        : "Rs: " + item.originalPrice,
+      Stock: item.stock,
+      sold: item?.sold_out,
+    })) || [];
   return (
     <>
       {isLoading ? (
         <Loader />
       ) : (
-        <div className="w-full mx-8 pt-1 mt-10 bg-white">
-          <DataGrid
-            rows={row}
-            columns={columns}
-            pageSize={10}
-            disableSelectionOnClick
-            autoHeight
+        <div className="w-full pt-3  bg-white rounded shadow">
+          <table className="min-w-full table-auto">
+            <thead className="bg-gray-200">
+              <tr>
+                <th className="px-4 py-2 text-left">Product Id</th>
+                <th className="px-4 py-2 text-left">Name</th>
+                <th className="px-4 py-2 text-left">Price</th>
+                <th className="px-4 py-2 text-left">Stock</th>
+                <th className="px-4 py-2 text-left">Actions</th>
+              </tr>
+            </thead>
+            <tbody>
+              {row.map((product) => (
+                <tr key={product.id} className="border-b hover:bg-gray-100">
+                  <td className="px-4 py-2">{product.id}</td>
+                  <td className="px-4 py-2">{product.name}</td>
+                  <td className="px-4 py-2">{product.price}</td>
+                  <td className="px-4 py-2">{product.Stock}</td>
+                  <td className="px-4 py-2 flex space-x-2">
+                    <Link to={`/product/${product.id}`}>
+                      <Button variant="outlined" color="primary">
+                        <AiOutlineEye size={20} />
+                      </Button>
+                    </Link>
+                    <Button
+                      onClick={() => handleEdit(product)}
+                      variant="outlined"
+                      color="primary">
+                      <AiOutlineEdit size={20} />
+                    </Button>
+                    <Button
+                      onClick={() => handleDelete(product.id)}
+                      variant="outlined"
+                      color="secondary">
+                      <AiOutlineDelete size={20} />
+                    </Button>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+          <ConfirmDeletePopup
+            isOpen={isDeletePopupOpen}
+            onClose={() => setDeletePopupOpen(false)}
+            onConfirm={confirmDelete}
           />
+          {isEditPopupOpen && (
+            <EditProductPopup
+              isOpen={isEditPopupOpen}
+              onClose={() => setEditPopupOpen(false)}
+              product={productToEdit}
+              onConfirm={confirmEdit}
+            />
+          )}
         </div>
       )}
     </>

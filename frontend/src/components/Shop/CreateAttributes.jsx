@@ -48,6 +48,16 @@ const CreateAttributes = () => {
 
   // Create new attribute
   const handleCreate = async () => {
+    const optionArray = options.split(",").map((option) => ({
+      key: option.trim().toLowerCase(),
+      value: option.trim(),
+    }));
+
+    const uniqueOptions = [...new Set(optionArray.map((opt) => opt.key))];
+    if (uniqueOptions.length !== optionArray.length) {
+      toast.error("Options must be unique!");
+      return;
+    }
     try {
       await axios.post(`${server}/attribute/create`, {
         name,
@@ -100,14 +110,16 @@ const CreateAttributes = () => {
 
   // Delete an attribute
   const handleDelete = async (id) => {
-    try {
-      await axios.delete(`${server}/attribute/delete/${id}`);
-      toast.success("Attribute deleted successfully!");
-      fetchAttributes();
-    } catch (error) {
-      toast.error(
-        error.response ? error.response.data.message : "Something went wrong!"
-      );
+    if (window.confirm("Are you sure you want to delete this attribute?")) {
+      try {
+        await axios.delete(`${server}/attribute/delete/${id}`);
+        toast.success("Attribute deleted successfully!");
+        fetchAttributes();
+      } catch (error) {
+        toast.error(
+          error.response ? error.response.data.message : "Something went wrong!"
+        );
+      }
     }
   };
 

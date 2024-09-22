@@ -24,7 +24,9 @@ import {
   TrackOrderPage,
   UserInbox,
   ChatWithUs,
-  AllVendors
+  AllVendors,
+  TermsofService,
+  PrivacyPolicy,
 } from "./routes/Routes.js";
 import {
   ShopDashboardPage,
@@ -67,36 +69,26 @@ import { Elements } from "@stripe/react-stripe-js";
 import { loadStripe } from "@stripe/stripe-js";
 
 const App = () => {
-  const [stripeApikey, setStripeApiKey] = useState("");
-
-  async function getStripeApikey() {
-    const { data } = await axios.get(`${server}/payment/stripeapikey`);
-    setStripeApiKey(data.stripeApikey);
-  }
   useEffect(() => {
     Store.dispatch(loadUser());
     Store.dispatch(loadSeller());
     Store.dispatch(getAllProducts());
     Store.dispatch(getAllEvents());
-    getStripeApikey();
   }, []);
 
   return (
     <BrowserRouter>
-      {stripeApikey && (
-        <Elements stripe={loadStripe(stripeApikey)}>
-          <Routes>
-            <Route
-              path="/payment"
-              element={
-                <ProtectedRoute>
-                  <PaymentPage />
-                </ProtectedRoute>
-              }
-            />
-          </Routes>
-        </Elements>
-      )}
+      <Routes>
+        <Route
+          path="/payment"
+          element={
+            <ProtectedRoute>
+              <PaymentPage />
+            </ProtectedRoute>
+          }
+        />
+      </Routes>
+
       <Routes>
         <Route path="/" element={<HomePage />} />
         <Route path="/login" element={<LoginPage />} />
@@ -116,6 +108,8 @@ const App = () => {
         <Route path="/chat-with-us" element={<ChatWithUs />} />
         <Route path="/all-stores" element={<AllVendors />} />
         <Route path="/faq" element={<FAQPage />} />
+        <Route path="/terms-of-service" element={<TermsofService />} />
+        <Route path="/privacy-policy" element={<PrivacyPolicy />} />
         <Route
           path="/checkout"
           element={
@@ -169,6 +163,7 @@ const App = () => {
             </SellerProtectedRoute>
           }
         />
+
         <Route
           path="/settings"
           element={
@@ -226,7 +221,7 @@ const App = () => {
             </SellerProtectedRoute>
           }
         />
-         <Route
+        <Route
           path="/dashboard-products-attributes"
           element={
             <SellerProtectedRoute>
@@ -275,22 +270,8 @@ const App = () => {
           }
         />
         {/* Admin Routes */}
-        <Route
-          path="/admin/dashboard"
-          element={
-           
-              <AdminDashboardPage />
-           
-          }
-        />
-        <Route
-          path="/admin-users"
-          element={
-            
-              <AdminDashboardUsers />
-            
-          }
-        />
+        <Route path="/admin/dashboard" element={<AdminDashboardPage />} />
+        <Route path="/admin-users" element={<AdminDashboardUsers />} />
         <Route
           path="/admin-sellers"
           element={

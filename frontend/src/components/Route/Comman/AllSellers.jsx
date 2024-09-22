@@ -24,7 +24,7 @@ const AllSellers = () => {
 
   // Handler for clicking on an avatar
   const handleShopClick = (shopId) => {
-    navigate(`/shop/${shopId}`);
+    navigate(`/shop/preview/${shopId}`);
   };
 
   return (

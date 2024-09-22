@@ -31,17 +31,25 @@ const Checkout = () => {
   // }, []);
 
   useEffect(() => {
-    window.scrollTo(0, 0);
     const fetchShippingCosts = async () => {
       try {
         const shippingCosts = await Promise.all(
           cart.map(async (item) => {
-            const response = await axios.get(`${server}/product/${item._id}`);
-            return response.data.isFreeShipping
-              ? 0
-              : response.data.shippingCost;
+            try {
+              const response = await axios.get(`${server}/product/get-product/${item._id}`);
+              return response.data.isFreeShipping
+                ? 0
+                : response.data.shippingCost || 0;
+            } catch (error) {
+              console.error(
+                `Error fetching shipping cost for product ${item._id}:`,
+                error
+              );
+              return 0; // Default to 0 if fetching shipping cost fails for any product
+            }
           })
         );
+
         const totalShipping = shippingCosts.reduce(
           (acc, cost) => acc + cost,
           0
@@ -52,7 +60,9 @@ const Checkout = () => {
       }
     };
 
-    fetchShippingCosts();
+    if (cart && cart.length > 0) {
+      fetchShippingCosts();
+    }
   }, [cart]);
 
   const paymentSubmit = () => {
@@ -374,7 +384,7 @@ const CartData = ({
           </h5>
         </div>
         <div className="flex justify-between">
-          <h3 className="text-[18px] font-[600] text-[#ff0000a4]">Total:</h3>
+          <h3 className="text-[18px] font-[600] text-[#2e70ff]">Total:</h3>
           <h5 className="text-[18px] font-[600]">Rs: {totalPrice}</h5>
         </div>
         <br />
@@ -388,7 +398,7 @@ const CartData = ({
             required
           />
           <input
-            className={`w-full h-[40px] border border-[#f63b60] text-center text-[#f63b60] rounded-[3px] mt-8 cursor-pointer`}
+            className={`w-full h-[40px] border border-[#2e70ff] text-center text-[#2e70ff] rounded-[3px] mt-8 cursor-pointer`}
             required
             value="Apply code"
             type="submit"

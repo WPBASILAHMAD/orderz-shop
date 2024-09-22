@@ -41,7 +41,7 @@ const conversation = require("./controller/conversation");
 const message = require("./controller/message");
 const withdraw = require("./controller/withdraw");
 const attributes = require("./controller/attributes");
-const variation = require("./controller/variation");
+const variations = require("./controller/variations");
 
 app.use("/api/v2/user", user);
 app.use("/api/v2/conversation", conversation);
@@ -54,7 +54,7 @@ app.use("/api/v2/coupon", coupon);
 app.use("/api/v2/payment", payment);
 app.use("/api/v2/withdraw", withdraw);
 app.use("/api/v2/attribute", attributes);
-app.use("/api/v2/variation", variation);
+app.use("/api/v2/variation", variations);
 
 // it's for ErrorHandling
 app.use(ErrorHandler);

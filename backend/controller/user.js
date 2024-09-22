@@ -156,6 +156,24 @@ router.get(
   })
 );
 
+// Get all users without authentication
+router.get(
+  "/all-users",
+  catchAsyncErrors(async (req, res, next) => {
+    try {
+      const users = await User.find()
+        .select("-password")
+        .sort({ createdAt: -1 }); // Exclude passwords from the response
+      res.status(200).json({
+        success: true,
+        users,
+      });
+    } catch (error) {
+      return next(new ErrorHandler(error.message, 500));
+    }
+  })
+);
+
 // log out user
 router.get(
   "/logout",
@@ -390,8 +408,8 @@ router.get(
 // delete users --- admin
 router.delete(
   "/delete-user/:id",
-  isAuthenticated,
-  isAdmin("Admin"),
+  // isAuthenticated,
+  // isAdmin("Admin"),
   catchAsyncErrors(async (req, res, next) => {
     try {
       const user = await User.findById(req.params.id);

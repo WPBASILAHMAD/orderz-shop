@@ -7,6 +7,7 @@ import { FiPackage, FiShoppingBag } from "react-icons/fi";
 import { useSelector } from "react-redux";
 import { Link } from "react-router-dom";
 import { BiMessageSquareDetail } from "react-icons/bi";
+import BlackLogo from "../../../Assests/imgs/logo/orderzshop-black.png";
 
 const DashboardHeader = () => {
   const { seller } = useSelector((state) => state.seller);
@@ -24,11 +25,11 @@ const DashboardHeader = () => {
     <>
       <div className="w-full h-[80px] bg-white shadow sticky top-0 left-0 z-30 flex items-center justify-between px-4">
         <div>
-          <Link to="/dashboard">
-            <h3 className="text-3xl font-bold font-Poppins">
-              Orderz <span className="text-[#ffbb38]">Shop</span>
-            </h3>
-          </Link>
+          <img
+            src={BlackLogo}
+            alt=""
+            className=" cursor-pointer h-12 object-contain"
+          />
         </div>
 
         <div className="flex items-center">
@@ -36,10 +37,11 @@ const DashboardHeader = () => {
             {/* Boost Your Sells Button */}
             <button
               onClick={handleBoostClick}
-              className="bg-gradient-to-r from-[#ff7e5f] to-[#feb47b] text-white px-6 py-2 rounded-full shadow-lg hover:shadow-xl hover:from-[#feb47b] hover:to-[#ff7e5f] transition duration-300 ease-in-out font-semibold">
+              className="bg-gradient-to-r from-[#ff7e5f] to-[#feb47b] text-white px-4 py-3 md:px-6 md:py-3 rounded-full shadow-lg hover:shadow-xl hover:from-[#feb47b] hover:to-[#ff7e5f] transition duration-300 ease-in-out font-semibold text-sm md:text-base lg:text-lg">
               Boost Your Sells
             </button>
-            <Link to="/dashboard/cupouns" className="800px:block hidden">
+
+            <Link to="/dashboard-coupouns" className="800px:block hidden">
               <AiOutlineGift
                 color="#555"
                 size={30}

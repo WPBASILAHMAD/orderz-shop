@@ -7,6 +7,7 @@ import { FiPackage, FiShoppingBag } from "react-icons/fi";
 import { MdOutlineLocalOffer } from "react-icons/md";
 import { useSelector } from "react-redux";
 import { Link } from "react-router-dom";
+import BlackLogo from "../../Assests/imgs/logo/orderzshop-black.png";
 
 const AdminHeader = () => {
   const { user } = useSelector((state) => state.user);
@@ -14,11 +15,11 @@ const AdminHeader = () => {
   return (
     <div className="w-full h-[80px] bg-white shadow sticky top-0 left-0 z-30 flex items-center justify-between px-4">
       <div>
-        <Link to="/">
-          <h3 className="text-3xl font-bold font-Poppins">
-            Orderz <span className="text-[#ffbb38]">Shop</span>
-          </h3>
-        </Link>
+        <img
+          src={BlackLogo}
+          alt=""
+          className=" cursor-pointer h-16 object-contain"
+        />
       </div>
       <div className="flex items-center">
         <div className="flex items-center mr-4">

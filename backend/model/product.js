@@ -47,6 +47,15 @@ const productSchema = new mongoose.Schema({
     type: Boolean,
     default: false, // Default isFreeShipping is false
   },
+  variations: [
+    {
+      stock: { type: Number, required: false },
+      price: { type: Number, required: false },
+      sku: { type: String, required: false },
+      // Add any other fields you need for variations
+    },
+  ],
+
   images: [
     {
       public_id: {
@@ -86,7 +95,12 @@ const productSchema = new mongoose.Schema({
     type: String,
     required: true,
   },
-  attributes: [{ id: { type: String }, option: { type: Object } }],
+  attributes: [
+    {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "Attribute", // Reference to the Attribute model
+    },
+  ],
   shop: {
     type: Object,
     required: true,

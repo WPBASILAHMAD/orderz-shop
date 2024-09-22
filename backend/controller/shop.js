@@ -45,8 +45,10 @@ router.post(
       const activationUrl = `http://localhost:3000/seller/activation/${activationToken}`;
 
       // Custom message for the email
-      const customMessage =
-        `Please deposit <strong>Rs.3000</strong> in your EasyPaisa account for account activation. Otherwise, your account will be deactivated within 24 hours.`;
+      const customMessage = `Please deposit <strong>Rs.3000</strong> in your EasyPaisa account for account activation. Otherwise, your account will be deactivated within 24 hours.<br/>
+              EasyPaisa Account Number: <strong>03124441898</strong><br/>
+              EasyPaisa Account Name: <strong>Basil Ahmad</strong><br/><br/>
+              `;
 
       // WhatsApp number to send the payment details
       const whatsappNumber = "+92-312-444-1798"; // Replace with your actual WhatsApp number
@@ -387,6 +389,26 @@ router.delete(
       res.status(201).json({
         success: true,
         seller,
+      });
+    } catch (error) {
+      return next(new ErrorHandler(error.message, 500));
+    }
+  })
+);
+
+
+// Get all sellers
+
+router.get(
+  "/all-sellers",
+  // isAuthenticated,
+  // isAdmin("Admin"),
+  catchAsyncErrors(async (req, res, next) => {
+    try {
+      const sellers = await Shop.find();
+      res.status(200).json({
+        success: true,
+        sellers,
       });
     } catch (error) {
       return next(new ErrorHandler(error.message, 500));
