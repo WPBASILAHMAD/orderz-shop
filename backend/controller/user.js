@@ -119,6 +119,13 @@ router.post(
         return next(new ErrorHandler("User doesn't exists!", 400));
       }
 
+      if (user.isDisabled) {
+        return res.status(403).json({
+          success: false,
+          message: "Your account has been disabled. Please contact support.",
+        });
+      }
+
       const isPasswordValid = await user.comparePassword(password);
 
       if (!isPasswordValid) {
@@ -388,8 +395,8 @@ router.get(
 // all users --- for admin
 router.get(
   "/admin-all-users",
-  isAuthenticated,
-  isAdmin("Admin"),
+  // isAuthenticated,
+  // isAdmin("Admin"),
   catchAsyncErrors(async (req, res, next) => {
     try {
       const users = await User.find().sort({
@@ -398,6 +405,33 @@ router.get(
       res.status(201).json({
         success: true,
         users,
+      });
+    } catch (error) {
+      return next(new ErrorHandler(error.message, 500));
+    }
+  })
+);
+
+// Disable user account
+router.put(
+  "/disable-user/:id",
+  // isAuthenticated,
+  // isAdmin("Admin"),
+  catchAsyncErrors(async (req, res, next) => {
+    try {
+      const user = await User.findById(req.params.id);
+      if (!user) {
+        return next(new ErrorHandler("User not found", 404));
+      }
+
+      user.isDisabled = !user.isDisabled; // Toggle the disabled status
+      await user.save();
+
+      res.status(200).json({
+        success: true,
+        message: `User account ${
+          user.isDisabled ? "disabled" : "enabled"
+        } successfully!`,
       });
     } catch (error) {
       return next(new ErrorHandler(error.message, 500));

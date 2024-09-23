@@ -1,9 +1,15 @@
+/** @format */
+
 import React, { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { Link } from "react-router-dom";
 import { getAllUsers } from "../../redux/actions/user";
 import { DataGrid } from "@material-ui/data-grid";
-import { AiOutlineDelete } from "react-icons/ai";
+import {
+  AiOutlineCheckCircle,
+  AiOutlineDelete,
+  AiOutlinePoweroff,
+} from "react-icons/ai";
 import { Button } from "@material-ui/core";
 import styles from "../../styles/styles";
 import { RxCross1 } from "react-icons/rx";
@@ -23,46 +29,53 @@ const AllUsers = () => {
 
   const handleDelete = async (id) => {
     await axios
-    .delete(`${server}/user/delete-user/${id}`, { withCredentials: true })
-    .then((res) => {
-      toast.success(res.data.message);
-    });
+      .delete(`${server}/user/delete-user/${id}`, { withCredentials: true })
+      .then((res) => {
+        toast.success(res.data.message);
+      });
 
-  dispatch(getAllUsers());
+    dispatch(getAllUsers());
+  };
+
+  const handleDisable = async (id) => {
+    await axios
+      .put(`${server}/user/disable-user/${id}`, {}, { withCredentials: true })
+      .then((res) => {
+        toast.success(res.data.message);
+        dispatch(getAllUsers()); // Refresh the user list
+      })
+      .catch((err) => {
+        toast.error(err.response.data.message);
+      });
   };
 
   const columns = [
     { field: "id", headerName: "User ID", minWidth: 150, flex: 0.7 },
-
+    { field: "name", headerName: "Name", minWidth: 130, flex: 0.7 },
+    { field: "email", headerName: "Email", minWidth: 130, flex: 0.7 },
+    { field: "role", headerName: "User Role", minWidth: 130, flex: 0.7 },
+    { field: "joinedAt", headerName: "Joined At", minWidth: 130, flex: 0.8 },
     {
-      field: "name",
-      headerName: "name",
-      minWidth: 130,
-      flex: 0.7,
+      field: "disable",
+      headerName: "Disable User",
+      minWidth: 150,
+      renderCell: (params) => (
+        <Button
+          onClick={() => handleDisable(params.id)}
+          style={{ color: params.row.isDisabled ? "green" : "red" }} // Change color based on state
+        >
+          {params.row.isDisabled ? (
+            <>
+              <AiOutlineCheckCircle size={20} /> Enable
+            </>
+          ) : (
+            <>
+              <AiOutlinePoweroff size={20} /> Disable
+            </>
+          )}
+        </Button>
+      ),
     },
-    {
-      field: "email",
-      headerName: "Email",
-      type: "text",
-      minWidth: 130,
-      flex: 0.7,
-    },
-    {
-      field: "role",
-      headerName: "User Role",
-      type: "text",
-      minWidth: 130,
-      flex: 0.7,
-    },
-
-    {
-      field: "joinedAt",
-      headerName: "joinedAt",
-      type: "text",
-      minWidth: 130,
-      flex: 0.8,
-    },
-
     {
       field: " ",
       flex: 1,
@@ -70,15 +83,11 @@ const AllUsers = () => {
       headerName: "Delete User",
       type: "number",
       sortable: false,
-      renderCell: (params) => {
-        return (
-          <>
-            <Button onClick={() => setUserId(params.id) || setOpen(true)}>
-              <AiOutlineDelete size={20} />
-            </Button>
-          </>
-        );
-      },
+      renderCell: (params) => (
+        <Button onClick={() => setUserId(params.id) || setOpen(true)}>
+          <AiOutlineDelete size={20} />
+        </Button>
+      ),
     },
   ];
 
@@ -119,14 +128,12 @@ const AllUsers = () => {
               <div className="w-full flex items-center justify-center">
                 <div
                   className={`${styles.button} text-white text-[18px] !h-[42px] mr-4`}
-                  onClick={() => setOpen(false)}
-                >
+                  onClick={() => setOpen(false)}>
                   cancel
                 </div>
                 <div
                   className={`${styles.button} text-white text-[18px] !h-[42px] ml-4`}
-                  onClick={() =>  setOpen(false) || handleDelete(userId)}
-                >
+                  onClick={() => setOpen(false) || handleDelete(userId)}>
                   confirm
                 </div>
               </div>

@@ -1,36 +1,71 @@
-import React from "react";
-import { Link } from "react-router-dom";
+/** @format */
+import React, { useEffect, useState } from "react";
+import Slider from "react-slick";
+import axios from "axios";
+import "slick-carousel/slick/slick.css";
+import "slick-carousel/slick/slick-theme.css";
 import styles from "../../../styles/styles";
 
 const Hero = () => {
+  const [images, setImages] = useState([]);
+
+  // Fetch images from WordPress Media Library
+  useEffect(() => {
+    const fetchImages = async () => {
+      try {
+        const response = await axios.get(
+          "https://images.orderzshop.com/wp-json/wp/v2/media", // Replace with your WordPress site URL
+          {
+            params: {
+              per_page: 10, // Adjust the number of images to fetch more than 1
+              media_type: "image",
+            },
+          }
+        );
+        const imageUrls = response.data.map((img) => img.source_url);
+        setImages(imageUrls);
+      } catch (error) {
+        console.error("Error fetching images from WordPress Media:", error);
+      }
+    };
+
+    fetchImages();
+  }, []);
+
+  const settings = {
+    dots: false,
+    infinite: true,
+    speed: 500,
+    slidesToShow: 1,
+    slidesToScroll: 1,
+    autoplay: true,
+    autoplaySpeed: 3000,
+    arrows: true, // Enable arrows for easier navigation
+  };
+
   return (
     <div
-      className={`relative min-h-[70vh] 800px:min-h-[80vh] w-full bg-no-repeat ${styles.noramlFlex}`}
-      style={{
-        backgroundImage:
-          "url(https://themes.rslahmed.dev/rafcart/assets/images/banner-2.jpg)",
-      }}
-    >
-      <div className={`${styles.section} w-[90%] 800px:w-[60%]`}>
-        <h1
-          className={`text-[35px] leading-[1.2] 800px:text-[60px] text-[#3d3a3a] font-[600] capitalize`}
-        >
-          Best Collection for <br /> home Decoration
-        </h1>
-        <p className="pt-5 text-[16px] font-[Poppins] font-[400] text-[#000000ba]">
-          Lorem ipsum dolor sit amet consectetur, adipisicing elit. Beatae,
-          assumenda? Quisquam itaque <br /> exercitationem labore vel, dolore
-          quidem asperiores, laudantium temporibus soluta optio consequatur{" "}
-          <br /> aliquam deserunt officia. Dolorum saepe nulla provident.
-        </p>
-        <Link to="/products" className="inline-block">
-            <div className={`${styles.button} mt-5`}>
-                 <span className="text-[#fff] font-[Poppins] text-[18px]">
-                    Shop Now
-                 </span>
+      className={`relative min-h-[0vh] md:min-h-[40vh] lg:min-h-[50vh] w-full bg-no-repeat`}>
+      <Slider {...settings} className="w-full px-2 md:px-4">
+        {images.length > 0 ? (
+          images.map((url, index) => (
+            <div key={index} className="flex justify-center">
+              <img
+                src={url}
+                alt={`Slide ${index}`}
+                className="w-full h-auto object-cover"
+                style={{
+                  margin: "10px", // Adjust margin for mobile
+                  borderRadius: "20px", // More pronounced border radius
+                  boxShadow: "0 4px 10px rgba(0, 0, 0, 0.2)", // Subtle shadow for depth
+                }}
+              />
             </div>
-        </Link>
-      </div>
+          ))
+        ) : (
+          <div>Loading...</div>
+        )}
+      </Slider>
     </div>
   );
 };
