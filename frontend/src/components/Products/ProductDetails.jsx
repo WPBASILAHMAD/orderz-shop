@@ -7,13 +7,10 @@ import {
   AiOutlineMessage,
   AiOutlineShoppingCart,
   AiOutlineShareAlt,
+  AiOutlineLink,
 } from "react-icons/ai";
-import {
-  FaFacebookF,
-  FaTwitter,
-  FaWhatsapp,
-  FaLinkedinIn,
-} from "react-icons/fa";
+import { FaFacebookF, FaWhatsapp, FaTiktok, FaYoutube } from "react-icons/fa"; // Updated import
+
 import { useDispatch, useSelector } from "react-redux";
 import { Link, useNavigate } from "react-router-dom";
 import { getAllProductsShop } from "../../redux/actions/product";
@@ -26,9 +23,12 @@ import {
 import { addTocart } from "../../redux/actions/cart";
 import { toast } from "react-toastify";
 import Ratings from "./Ratings";
+import { useParams } from "react-router-dom";
+
 import axios from "axios";
 
 const ProductDetails = ({ data }) => {
+  const { id } = useParams();
   const { wishlist } = useSelector((state) => state.wishlist);
   const { cart } = useSelector((state) => state.cart);
   const { user, isAuthenticated } = useSelector((state) => state.user);
@@ -51,7 +51,7 @@ const ProductDetails = ({ data }) => {
     } else {
       setClick(false);
     }
-  }, [data, wishlist]);
+  }, [data, wishlist, id]);
 
   const incrementCount = () => {
     setCount(count + 1);
@@ -114,14 +114,14 @@ const ProductDetails = ({ data }) => {
       case "facebook":
         shareUrl = `https://www.facebook.com/sharer/sharer.php?u=${productUrl}`;
         break;
-      case "twitter":
-        shareUrl = `https://twitter.com/share?url=${productUrl}&text=${data.name}`;
-        break;
       case "whatsapp":
         shareUrl = `https://api.whatsapp.com/send?text=${productUrl}`;
         break;
-      case "linkedin":
-        shareUrl = `https://www.linkedin.com/shareArticle?mini=true&url=${productUrl}`;
+      case "tiktok":
+        shareUrl = `https://www.tiktok.com/share?url=${productUrl}`; // Example URL
+        break;
+      case "youtube":
+        shareUrl = `https://www.youtube.com/watch?v=${data._id}`; // Example URL
         break;
       default:
         return;
@@ -271,8 +271,29 @@ const ProductDetails = ({ data }) => {
                   Send Message
                 </button>
               </div>
-
               {renderShippingCost()}
+
+              {/* {Vendor Details} */}
+              <div className="w-full flex my-4 border-b pb-4">
+                <Link
+                  to={`/shop/preview/${data.shop._id}`}
+                  className="flex items-center mt-4 space-x-3">
+                  <img
+                    src={data.shop.avatar?.url}
+                    alt="Shop"
+                    className="w-12 h-12 rounded-full border-2 border-gray-300"
+                  />
+                  <div>
+                    <h3 className="text-lg font-semibold text-gray-800">
+                      {data.shop.name}
+                    </h3>
+                    <p className="text-sm text-gray-600">
+                      {averageRating} / 5 Ratings
+                    </p>
+                  </div>
+                </Link>
+                {/* <p className="text-red-500 mt-5">(50) Sold out</p> */}
+              </div>
 
               {/* Share Buttons */}
               <div className="mt-8">
@@ -289,21 +310,31 @@ const ProductDetails = ({ data }) => {
                       className="text-blue-600 cursor-pointer hover:scale-110 transition"
                       onClick={() => handleShareClick("facebook")}
                     />
-                    <FaTwitter
+                    <FaTiktok // Replace Twitter icon with TikTok
                       size={24}
-                      className="text-blue-400 cursor-pointer hover:scale-110 transition"
-                      onClick={() => handleShareClick("twitter")}
+                      className="text-black cursor-pointer hover:scale-110 transition"
+                      onClick={() => handleShareClick("tiktok")} // Update share click for TikTok
                     />
                     <FaWhatsapp
                       size={24}
                       className="text-green-500 cursor-pointer hover:scale-110 transition"
                       onClick={() => handleShareClick("whatsapp")}
                     />
-                    <FaLinkedinIn
+                    <FaYoutube // Replace LinkedIn icon with YouTube
                       size={24}
-                      className="text-blue-500 cursor-pointer hover:scale-110 transition"
-                      onClick={() => handleShareClick("linkedin")}
+                      className="text-red-600 cursor-pointer hover:scale-110 transition"
+                      onClick={() => handleShareClick("youtube")} // Update share click for YouTube
                     />
+                    <button // Copy Link Button
+                      onClick={() => {
+                        const productUrl = `${window.location.origin}/product/${data._id}`;
+                        navigator.clipboard.writeText(productUrl).then(() => {
+                          toast.success("Product link copied to clipboard!"); // Toast on copy
+                        });
+                      }}
+                      className="text-gray-500 hover:scale-110 transition">
+                      <AiOutlineLink size={24} /> {/* Add the Copy icon */}
+                    </button>
                   </div>
                 )}
               </div>
@@ -311,47 +342,48 @@ const ProductDetails = ({ data }) => {
           </div>
 
           {/* Reviews */}
-          <div className="w-full mt-8">
-            <h1 className="text-2xl font-bold text-gray-900 mb-4">
-              Product Reviews
-            </h1>
-            <div className="w-full flex">
-              <div className="w-[30%] flex flex-col   border-r">
-                <h5 className="text-2xl font-bold text-[#256aff]">
-                  {averageRating}/5
-                </h5>
-                <Ratings rating={averageRating} />
-                <span className="text-sm text-gray-500 mt-1">
-                  ({totalReviewsLength} Ratings)
-                </span>
-              </div>
-              <div className="w-[70%]">
-                {allReviews.slice(0, reviewsToShow).map((review, index) => (
-                  <div className="w-full flex my-4 border-b pb-4" key={index}>
-                    <img
-                      src={review?.user?.avatar?.url}
-                      alt=""
-                      className="w-[50px] h-[50px] rounded-full"
-                    />
-                    <div className="pl-4">
-                      <div className="w-full flex items-center">
-                        <h1 className="font-[500] mr-3">{review.user.name}</h1>
-                        <Ratings rating={review.rating} />
-                      </div>
-                      <p className="text-gray-400 text-sm">{review.comment}</p>
-                    </div>
-                  </div>
-                ))}
-                {reviewsToShow < allReviews.length && (
-                  <button
-                    onClick={loadMoreReviews}
-                    className="text-blue-500 hover:underline">
-                    Load More Reviews
-                  </button>
-                )}
-              </div>
+<div className="w-full mt-8 bg-white shadow-lg rounded-lg p-6">
+  <h1 className="text-3xl font-bold text-gray-900 mb-6">
+    Product Reviews
+  </h1>
+  <div className="flex">
+    <div className="w-[30%] flex flex-col border-r pr-6">
+      <h5 className="text-4xl font-bold text-[#256aff]">
+        {averageRating}/5
+      </h5>
+      <Ratings rating={averageRating} />
+      <span className="text-sm text-gray-500 mt-2">
+        ({totalReviewsLength} Ratings)
+      </span>
+    </div>
+    <div className="w-[70%] pl-6">
+      {allReviews.slice(0, reviewsToShow).map((review, index) => (
+        <div className="w-full flex my-6 border-b pb-4 hover:bg-gray-50 transition duration-300 ease-in-out" key={index}>
+          <img
+            src={user?.avatar?.url}
+            alt=""
+            className="w-[60px] h-[60px] rounded-full border border-gray-300"
+          />
+          <div className="pl-4">
+            <div className="w-full flex items-center">
+              <h1 className="font-semibold mr-3 text-lg">{review.user.name}</h1>
+              <Ratings rating={review.rating} />
             </div>
+            <p className="text-gray-600 text-md">{review.comment}</p>
           </div>
+        </div>
+      ))}
+      {reviewsToShow < allReviews.length && (
+        <button
+          onClick={loadMoreReviews}
+          className="mt-4 text-blue-500 hover:underline font-medium">
+          Load More Reviews
+        </button>
+      )}
+    </div>
+  </div>
+</div>
+
         </div>
       ) : null}
     </div>

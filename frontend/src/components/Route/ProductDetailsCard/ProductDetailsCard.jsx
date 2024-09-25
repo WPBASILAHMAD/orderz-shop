@@ -26,10 +26,11 @@ const ProductDetailsCard = ({ setOpen, data }) => {
   const { cart } = useSelector((state) => state.cart);
   const { wishlist } = useSelector((state) => state.wishlist);
   const dispatch = useDispatch();
+  const { products } = useSelector((state) => state.products);
+
   const [count, setCount] = useState(1);
   const [click, setClick] = useState(false);
   const navigate = useNavigate();
-
 
   const handleMessageSubmit = async () => {
     if (isAuthenticated) {
@@ -95,6 +96,24 @@ const ProductDetailsCard = ({ setOpen, data }) => {
     dispatch(addToWishlist(data));
   };
 
+  const totalReviewsLength =
+    products &&
+    products.reduce((acc, product) => acc + product.reviews.length, 0);
+
+  const totalRatings =
+    products &&
+    products.reduce(
+      (acc, product) =>
+        acc + product.reviews.reduce((sum, review) => sum + review.rating, 0),
+      0
+    );
+
+  const avg = totalRatings / totalReviewsLength || 0;
+
+  const averageRating = avg.toFixed(2);
+  const allReviews =
+    products && products.map((product) => product.reviews).flat();
+
   return (
     <div className="bg-white">
       {data ? (
@@ -117,7 +136,7 @@ const ProductDetailsCard = ({ setOpen, data }) => {
                   to={`/shop/preview/${data.shop._id}`}
                   className="flex items-center mt-4 space-x-3">
                   <img
-                    src={`${data.images && data.images[0]?.url}`}
+                    src={data.shop.avatar?.url}
                     alt="Shop"
                     className="w-12 h-12 rounded-full border-2 border-gray-300"
                   />
@@ -126,7 +145,7 @@ const ProductDetailsCard = ({ setOpen, data }) => {
                       {data.shop.name}
                     </h3>
                     <p className="text-sm text-gray-600">
-                      {data?.ratings} Ratings
+                      {averageRating} / 5 Ratings
                     </p>
                   </div>
                 </Link>
@@ -136,7 +155,7 @@ const ProductDetailsCard = ({ setOpen, data }) => {
                   <AiOutlineMessage className="mr-2" />
                   Send Message
                 </button>
-                <p className="text-red-500 mt-5">(50) Sold out</p>
+                {/* <p className="text-red-500 mt-5">(50) Sold out</p> */}
               </div>
 
               <div className="md:w-1/2 md:pl-6 mt-6 md:mt-0">

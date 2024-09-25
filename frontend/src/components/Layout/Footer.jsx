@@ -8,49 +8,57 @@ import {
   AiOutlineTwitter,
 } from "react-icons/ai";
 import { Link, useNavigate } from "react-router-dom";
-import {
-  footercompanyLinks,
-  categoriesData,
-  navItems,
-  footerProductLinks,
-  footerSupportLinks,
-} from "../../static/data";
+import { categoriesData, footerSupportLinks } from "../../static/data";
 import { FaApple, FaGooglePlay } from "react-icons/fa";
 import WhiteLogo from "../../Assests/imgs/logo/orderzshop-white.png";
+import styles from "../../styles/styles";
+import { IoIosArrowForward } from "react-icons/io";
+import { useSelector } from "react-redux";
 
-const Footer = ({ active }) => {
+const Footer = () => {
   const navigate = useNavigate();
+  const { isSeller } = useSelector((state) => state.seller);
+
+  const handleShopLinkClick = (id) => {
+    window.location.href = `/products?category=${id}`; // Refresh the page
+  };
+
+  const handleSupportLinkClick = (url) => {
+    window.location.href = url; // Refresh the page
+  };
+
+  const handleDashboardClick = () => {
+    window.location.href = isSeller ? "/dashboard" : "/shop-create"; // Refresh the page
+  };
 
   return (
     <div className="bg-[#000] text-white">
       <div className="md:flex md:justify-between md:items-center sm:px-12 px-4 bg-[#342ac8] py-7">
         <h1 className="lg:text-4xl text-3xl md:mb-0 mb-6 lg:leading-normal font-semibold md:w-2/5">
-          <span className="text-[#56d879]">Subscribe</span> us for get news{" "}
-          <br />
-          events and offers
+          <span className="text-[#56d879]">Start Selling</span> with Just a
+          Click <br />
+          Open Your Store!
         </h1>
         <div>
-          <input
-            type="text"
-            required
-            placeholder="Enter your email..."
-            className="text-gray-800
-                sm:w-72 w-full sm:mr-5 mr-1 lg:mb-0 mb-4 py-2.5 rounded px-2 focus:outline-none"
-          />
-          <button className="bg-[#56d879] hover:bg-teal-500 duration-300 px-5 py-2.5 rounded-md text-whie md:w-auto w-full">
-            Submit
-          </button>
+          <div
+            className="bg-[#ffffff] hover:bg-[#ffbb38] transition duration-300 px-6 py-3 rounded-md flex items-center justify-center text-white cursor-pointer"
+            onClick={handleDashboardClick}>
+            <h1 className="text-[#000] flex items-center">
+              {isSeller ? "Go Dashboard" : "Become Seller"}{" "}
+              <IoIosArrowForward className="ml-1" />
+            </h1>
+          </div>
         </div>
       </div>
-      <div className="grid grid-cols-1 sm:gird-cols-3 lg:grid-cols-4 gap-6 sm:px-8 px-5 py-16 sm:text-center">
+      <div className="grid grid-cols-1 sm:grid-cols-3 lg:grid-cols-4 gap-6 sm:px-8 px-5 py-16 sm:text-center">
         <ul className="px-5 text-center sm:text-start flex sm:block flex-col items-center">
           <img
             src={WhiteLogo}
             alt=""
-            className=" cursor-pointer h-16 object-contain "
+            className="cursor-pointer h-16 object-cover"
           />
           <br />
-          <p>The home and elements needeed to create beatiful products.</p>
+          <p>The home and elements needed to create beautiful products.</p>
           <div className="flex items-center mt-[15px]">
             <AiFillFacebook size={25} className="cursor-pointer" />
             <AiOutlineTwitter
@@ -68,44 +76,21 @@ const Footer = ({ active }) => {
           </div>
         </ul>
 
-        {/* <ul className="text-center sm:text-start">
-          <h1 className="mb-1 font-semibold">Company</h1>
-          {footerProductLinks.map((link, index) => (
-            <li key={index}>
-              <Link
-                className="text-gray-400 hover:text-teal-400 duration-300
-                   text-sm cursor-pointer leading-6"
-                to={link.link}>
-                {link.name}
-              </Link>
-            </li>
-          ))}
-        </ul> */}
-
         <ul className="text-center sm:text-start">
           <h1 className="mb-1 font-semibold">Shop</h1>
-
           <li>
-            <div
-              className="text-gray-400 hover:text-teal-400 duration-300
-                   text-sm cursor-pointer leading-6">
+            <div className="text-gray-400 hover:text-teal-400 duration-300 text-sm cursor-pointer leading-6">
               {categoriesData &&
-                categoriesData.map((i) => {
-                  const handleSubmit = (i) => {
-                    navigate(`/products?category=${i.title}`);
-                  };
-                  return (
-                    <div
-                      className="text-gray-400 hover:text-teal-400 duration-300
-                   text-sm cursor-pointer leading-6"
-                      key={i.id}
-                      onClick={() => handleSubmit(i)}>
-                      <span className={`text-[15px] leading-[1.3]`}>
-                        {i.title}
-                      </span>
-                    </div>
-                  );
-                })}
+                categoriesData.map((category) => (
+                  <div
+                    key={category.id}
+                    className="text-gray-400 hover:text-teal-400 duration-300 text-sm cursor-pointer leading-6"
+                    onClick={() => handleShopLinkClick(category.title)}>
+                    <span className={`text-[15px] leading-[1.3]`}>
+                      {category.title}
+                    </span>
+                  </div>
+                ))}
             </div>
           </li>
         </ul>
@@ -113,14 +98,13 @@ const Footer = ({ active }) => {
         <ul className="text-center sm:text-start">
           <h1 className="mb-1 font-semibold">Support</h1>
           {footerSupportLinks &&
-            footerSupportLinks.map((i) => (
-              <div>
-                <Link
-                  to={i.url}
-                  className="text-gray-400 hover:text-teal-400 duration-300
-                  text-sm cursor-pointer leading-6 text-center">
-                  {i.title}
-                </Link>
+            footerSupportLinks.map((link) => (
+              <div key={link.id}>
+                <div
+                  onClick={() => handleSupportLinkClick(link.url)}
+                  className="text-gray-400 hover:text-teal-400 duration-300 text-sm cursor-pointer leading-6 ">
+                  {link.title}
+                </div>
               </div>
             ))}
         </ul>
@@ -142,15 +126,14 @@ const Footer = ({ active }) => {
         </div>
       </div>
 
-      <div
-        className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-10
-         text-center pt-2 text-gray-400 text-sm pb-8">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-10 text-center pt-2 text-gray-400 text-sm pb-8">
         <h6>
-          © 2024 <span className="text-[#ffbb38]"> OrderzShop</span>. All rights
-          reserved.
+          © 2024{" "}
+          <span className="text-[#ffbb38]">
+            <a href="https://orderzshop.com"> OrderzShop</a>{" "}
+          </span>
+          . All rights reserved.
         </h6>
-
-        {/* <span>© 2024 OrderzShop. All rights reserved.</span> */}
         <span>
           <a href="/terms-of-service" className="text-[#ffbb38]">
             Terms and Conditions

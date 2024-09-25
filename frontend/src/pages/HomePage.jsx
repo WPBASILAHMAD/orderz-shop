@@ -18,6 +18,7 @@ const HomePage = () => {
       <Hero />
 
       <VendorsAvatar />
+
       <Categories />
       <BestDeals />
       <Events />

@@ -17,6 +17,9 @@ const ProductsPage = () => {
   const [data, setData] = useState([]);
 
   useEffect(() => {
+    // Ensure allProducts is defined before filtering
+    if (!allProducts) return; // If allProducts is undefined, exit early
+
     let filteredData = allProducts;
 
     console.log("Category Data:", categoryData);

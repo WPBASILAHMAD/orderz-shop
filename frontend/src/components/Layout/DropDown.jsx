@@ -9,7 +9,7 @@ const DropDown = ({ categoriesData, setDropDown }) => {
   const [activeCategory, setActiveCategory] = useState(null);
 
   const submitHandle = (category) => {
-    navigate(`/products?category=${category.title}`);
+    navigate(`/products?category=${category.id}`);
     setDropDown(false);
     // window.location.reload();
   };

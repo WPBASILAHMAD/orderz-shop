@@ -140,7 +140,10 @@ const CreateProduct = () => {
 
   const handleSubmit = (e) => {
     e.preventDefault();
-
+    if (images.length === 0) {
+      toast.error("Please upload at least one product image.");
+      return; 
+    }
     const newForm = new FormData();
     images.forEach((image) => {
       newForm.append("images", image);
@@ -338,7 +341,7 @@ const CreateProduct = () => {
             />
           </Grid>
 
-          <Grid item xs={12}>
+          <Grid item xs={6}>
             <FormControlLabel
               control={
                 <Checkbox
@@ -359,6 +362,7 @@ const CreateProduct = () => {
               onChange={handleImageChange}
             />
             <label htmlFor="upload">
+              Upload Product Images
               <AiOutlinePlusCircle size={30} className="mt-3" color="#555" />
             </label>
             <div className="w-full flex items-center flex-wrap">
@@ -367,13 +371,14 @@ const CreateProduct = () => {
                   src={i}
                   key={i}
                   alt=""
+                  required
                   className="h-[60px] w-[60px] object-cover m-2"
                 />
               ))}
             </div>
           </Grid>
 
-      {isVariableProduct &&
+          {isVariableProduct &&
             attributes.map((attribute) => (
               <Grid item xs={12} key={attribute._id}>
                 <h5 className="text-[20px] font-Poppins">
@@ -416,14 +421,16 @@ const CreateProduct = () => {
                   <TableBody>
                     {variations.map((variation, index) => (
                       <TableRow key={index}>
-                        <TableCell>
-                          {variation.options.join(" / ")}
-                        </TableCell>
+                        <TableCell>{variation.options.join(" / ")}</TableCell>
                         <TableCell>
                           <TextField
                             value={variation.sku}
                             onChange={(e) =>
-                              handleVariationChange(index, "sku", e.target.value)
+                              handleVariationChange(
+                                index,
+                                "sku",
+                                e.target.value
+                              )
                             }
                             size="small"
                           />
@@ -433,7 +440,11 @@ const CreateProduct = () => {
                             type="number"
                             value={variation.price}
                             onChange={(e) =>
-                              handleVariationChange(index, "price", e.target.value)
+                              handleVariationChange(
+                                index,
+                                "price",
+                                e.target.value
+                              )
                             }
                             size="small"
                           />
@@ -443,7 +454,11 @@ const CreateProduct = () => {
                             type="number"
                             value={variation.stock}
                             onChange={(e) =>
-                              handleVariationChange(index, "stock", e.target.value)
+                              handleVariationChange(
+                                index,
+                                "stock",
+                                e.target.value
+                              )
                             }
                             size="small"
                           />
