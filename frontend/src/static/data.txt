@@ -1,22 +1,403 @@
- // Update an existing attribute
-  const handleUpdate = async () => {
-    try {
-      await axios.put(`${server}/attribute/update/${editId}`, {
-        name: editName,
-        options: editOptions.split(",").map((option) => ({
-          key: option.trim().toLowerCase(),
-          value: option.trim(),
-        })),
-        shopId: seller._id, // Include the shopId in the update request
-      });
-      toast.success("Attribute updated successfully!");
-      setEditId(null);
-      setEditName("");
-      setEditOptions("");
-      fetchAttributes();
-    } catch (error) {
-      toast.error(
-        error.response ? error.response.data.message : "Something went wrong!"
-      );
+/** @format */
+
+import React, { useEffect, useState } from "react";
+import { AiOutlinePlusCircle } from "react-icons/ai";
+import { useDispatch, useSelector } from "react-redux";
+import { useNavigate } from "react-router-dom";
+import { createProduct } from "../../redux/actions/product";
+import { toast } from "react-toastify";
+import axios from "axios";
+import { server } from "../../server";
+import {
+  TextField,
+  Select,
+  MenuItem,
+  FormControl,
+  InputLabel,
+  Button,
+  Checkbox,
+  FormControlLabel,
+  Grid,
+  Table,
+  TableBody,
+  TableCell,
+  TableContainer,
+  TableHead,
+  TableRow,
+  Paper,
+} from "@mui/material";
+
+const CreateProduct = () => {
+  const { seller } = useSelector((state) => state.seller);
+  const { success, error } = useSelector((state) => state.products);
+  const navigate = useNavigate();
+  const dispatch = useDispatch();
+
+  const [images, setImages] = useState([]);
+  const [name, setName] = useState("");
+  const [description, setDescription] = useState("");
+  const [category, setCategory] = useState("");
+  const [subcategory, setSubcategory] = useState("");
+  const [tags, setTags] = useState("");
+  const [originalPrice, setOriginalPrice] = useState();
+  const [discountPrice, setDiscountPrice] = useState();
+  const [stock, setStock] = useState();
+  const [shippingCost, setShippingCost] = useState(0);
+  const [isFreeShipping, setIsFreeShipping] = useState(false);
+  const [attributes, setAttributes] = useState([]);
+  const [selectedAttributeOptions, setSelectedAttributeOptions] = useState({});
+  const [variations, setVariations] = useState([]);
+  const [isVariableProduct, setIsVariableProduct] = useState(false); // State for variable product
+  const [categories, setCategories] = useState([]); // State for categories
+
+  useEffect(() => {
+    const fetchCategories = async () => {
+      try {
+        const response = await axios.get(
+          "https://seller.orderzshop.com/wp-json/wc/v3/products/categories",
+          {
+            params: {
+              per_page: 20,
+              consumer_key: "ck_281d66cb1af4225a90c3c735f1c284b62ce7d7e8",
+              consumer_secret: "cs_abf8f6b1783e631c17aa661ad09484fdf4717037",
+            },
+          }
+        );
+        console.log(response.data); // Log categories data
+        setCategories(response.data);
+      } catch (error) {
+        toast.error("Failed to fetch categories");
+      }
+    };
+
+    fetchCategories();
+  }, []);
+
+  useEffect(() => {
+    const fetchAttributes = async () => {
+      try {
+        const response = await axios.get(`${server}/attribute`, {
+          params: { shopId: seller._id },
+        });
+        setAttributes(response.data.attributes);
+      } catch (error) {
+        toast.error("Failed to fetch attributes");
+      }
+    };
+
+    fetchAttributes();
+  }, [seller._id]);
+
+  useEffect(() => {
+    if (error) {
+      toast.error(error);
     }
+    if (success) {
+      toast.success("Product created successfully!");
+      navigate("/dashboard-products");
+      window.location.reload();
+    }
+  }, [dispatch, error, success]);
+
+  const handleImageChange = (e) => {
+    const files = Array.from(e.target.files);
+    setImages([]);
+
+    files.forEach((file) => {
+      const reader = new FileReader();
+      reader.onload = () => {
+        if (reader.readyState === 2) {
+          setImages((old) => [...old, reader.result]);
+        }
+      };
+      reader.readAsDataURL(file);
+    });
   };
+
+  const generateCombinations = (options) => {
+    if (!options.length) return [[]];
+    const [first, ...rest] = options;
+    const combosWithoutFirst = generateCombinations(rest);
+    return first.flatMap((option) =>
+      combosWithoutFirst.map((combo) => [option, ...combo])
+    );
+  };
+
+  const updateVariations = () => {
+    const selectedOptions = Object.values(selectedAttributeOptions).filter(
+      (option) => option.length > 0
+    );
+    const combinations = generateCombinations(selectedOptions);
+
+    const newVariations = combinations.map((combo) => ({
+      options: combo,
+      sku: "",
+      price: "",
+      stock: "",
+    }));
+
+    setVariations(newVariations);
+  };
+
+  const handleAttributeChange = (attributeId, option) => {
+    setSelectedAttributeOptions((prev) => {
+      const options = prev[attributeId] || [];
+      return {
+        ...prev,
+        [attributeId]: options.includes(option)
+          ? options.filter((o) => o !== option)
+          : [...options, option],
+      };
+    });
+  };
+
+  useEffect(() => {
+    updateVariations();
+  }, [selectedAttributeOptions]);
+
+  const handleVariationChange = (index, key, value) => {
+    const newVariations = [...variations];
+    newVariations[index][key] = value;
+    setVariations(newVariations);
+  };
+
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    if (images.length === 0) {
+      toast.error("Please upload at least one product image.");
+      return;
+    }
+    const newForm = new FormData();
+    images.forEach((image) => {
+      newForm.append("images", image);
+    });
+
+    newForm.append("name", name);
+    newForm.append("description", description);
+    newForm.append("category", category);
+    newForm.append("subcategory", subcategory);
+    newForm.append("tags", tags);
+    newForm.append("originalPrice", originalPrice);
+    if (discountPrice) {
+      newForm.append("discountPrice", discountPrice);
+    }
+    newForm.append("stock", stock);
+    newForm.append("shippingCost", shippingCost);
+    newForm.append("isFreeShipping", isFreeShipping);
+    newForm.append("shopId", seller._id);
+
+    variations.forEach((variation) => {
+      newForm.append("variations", JSON.stringify(variation));
+    });
+
+    dispatch(
+      createProduct({
+        name,
+        description,
+        category,
+        subcategory, // Include subcategory
+        tags,
+        originalPrice,
+        discountPrice: discountPrice || null, // Ensure it’s not undefined
+        stock,
+        shippingCost,
+        isFreeShipping,
+        shopId: seller._id,
+        images,
+        variations,
+      })
+    );
+  };
+
+  const getSubcategories = () => {
+    const selectedCategory = categories.find((cat) => cat.id === category);
+    return selectedCategory ? selectedCategory.subcategories || [] : [];
+  };
+
+  return (
+    <div className="w-[90%] 800px:w-[100%] bg-white shadow rounded-[4px] p-8 overflow-y-scroll">
+      <h5 className="text-[30px] font-Poppins text-center">Create Product</h5>
+      <form onSubmit={handleSubmit}>
+        <Grid container spacing={2}>
+          <Grid item xs={12}>
+            <FormControlLabel
+              control={
+                <Checkbox
+                  checked={isVariableProduct}
+                  onChange={(e) => {
+                    setIsVariableProduct(e.target.checked);
+                    setSelectedAttributeOptions({}); // Reset selected options when toggling
+                    setVariations([]); // Clear variations when switching product type
+                  }}
+                />
+              }
+              label="Is this a variable product?"
+            />
+          </Grid>
+          <Grid item xs={12}>
+            <TextField
+              label="Name "
+              variant="outlined"
+              fullWidth
+              value={name}
+              onChange={(e) => setName(e.target.value)}
+              required
+              size="small"
+            />
+          </Grid>
+
+          <Grid item xs={12}>
+            <TextField
+              label="Description "
+              variant="outlined"
+              fullWidth
+              multiline
+              rows={2}
+              value={description}
+              onChange={(e) => setDescription(e.target.value)}
+              required
+              size="small"
+            />
+          </Grid>
+
+          <Grid item xs={6}>
+            <FormControl fullWidth size="small">
+              <InputLabel>Category *</InputLabel>
+              <Select
+                value={category}
+                onChange={(e) => {
+                  setCategory(e.target.value);
+                  setSubcategory("");
+                }}
+                required>
+                <MenuItem value="">
+                  <em>Choose a category</em>
+                </MenuItem>
+                {categories.map((cat) => (
+                  <MenuItem value={cat.id} key={cat.id}>
+                    {cat.name}
+                  </MenuItem>
+                ))}
+              </Select>
+            </FormControl>
+          </Grid>
+
+          <Grid item xs={6}>
+            <FormControl fullWidth size="small">
+              <InputLabel>Subcategory</InputLabel>
+              <Select
+                value={subcategory}
+                onChange={(e) => setSubcategory(e.target.value)}
+                disabled={!category}>
+                <MenuItem value="">
+                  <em>Choose a subcategory</em>
+                </MenuItem>
+                {getSubcategories().length > 0 &&
+                  getSubcategories().map((subcat) => (
+                    <MenuItem value={subcat.id} key={subcat.id}>
+                      {subcat.name}
+                    </MenuItem>
+                  ))}
+              </Select>
+            </FormControl>
+          </Grid>
+
+          <Grid item xs={6}>
+            <TextField
+              label="Tags (comma-separated)"
+              variant="outlined"
+              fullWidth
+              value={tags}
+              onChange={(e) => setTags(e.target.value)}
+              required
+              size="small"
+            />
+          </Grid>
+
+          <Grid item xs={6}>
+            <TextField
+              label="Original Price"
+              variant="outlined"
+              type="number"
+              fullWidth
+              value={originalPrice}
+              onChange={(e) => setOriginalPrice(e.target.value)}
+              required
+              size="small"
+            />
+          </Grid>
+
+          <Grid item xs={6}>
+            <TextField
+              label="Discount Price"
+              variant="outlined"
+              type="number"
+              fullWidth
+              value={discountPrice}
+              onChange={(e) => setDiscountPrice(e.target.value)}
+              size="small"
+            />
+          </Grid>
+
+          <Grid item xs={6}>
+            <TextField
+              label="Stock"
+              variant="outlined"
+              type="number"
+              fullWidth
+              value={stock}
+              onChange={(e) => setStock(e.target.value)}
+              required
+              size="small"
+            />
+          </Grid>
+
+          <Grid item xs={6}>
+            <TextField
+              label="Shipping Cost"
+              variant="outlined"
+              type="number"
+              fullWidth
+              value={shippingCost}
+              onChange={(e) => setShippingCost(e.target.value)}
+              size="small"
+            />
+          </Grid>
+
+          <Grid item xs={12}>
+            <FormControlLabel
+              control={
+                <Checkbox
+                  checked={isFreeShipping}
+                  onChange={(e) => setIsFreeShipping(e.target.checked)}
+                />
+              }
+              label="Free Shipping?"
+            />
+          </Grid>
+
+          <Grid item xs={12}>
+            <input
+              type="file"
+              accept="image/*"
+              onChange={handleImageChange}
+              multiple
+            />
+          </Grid>
+
+          <Grid item xs={12}>
+            <Button
+              type="submit"
+              variant="contained"
+              color="primary"
+              startIcon={<AiOutlinePlusCircle />}>
+              Create Product
+            </Button>
+          </Grid>
+        </Grid>
+      </form>
+    </div>
+  );
+};
+
+export default CreateProduct;

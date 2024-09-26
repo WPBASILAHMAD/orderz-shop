@@ -1,11 +1,9 @@
 /** @format */
 
 import React, { useEffect, useState } from "react";
-import { AiOutlinePlusCircle, AiOutlineMinusCircle } from "react-icons/ai";
 import { useDispatch, useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
 import { createProduct } from "../../redux/actions/product";
-import { categoriesData } from "../../static/data";
 import { toast } from "react-toastify";
 import axios from "axios";
 import { server } from "../../server";
@@ -26,7 +24,14 @@ import {
   TableHead,
   TableRow,
   Paper,
+  Typography,
+  Card,
+  CardContent,
+  Box,
+  Divider,
+  Chip,
 } from "@mui/material";
+import { Upload, DollarSign, Package, Truck, Tag, List } from "lucide-react";
 
 const CreateProduct = () => {
   const { seller } = useSelector((state) => state.seller);
@@ -48,7 +53,31 @@ const CreateProduct = () => {
   const [attributes, setAttributes] = useState([]);
   const [selectedAttributeOptions, setSelectedAttributeOptions] = useState({});
   const [variations, setVariations] = useState([]);
-  const [isVariableProduct, setIsVariableProduct] = useState(false); // State for variable product
+  const [isVariableProduct, setIsVariableProduct] = useState(false);
+  const [categories, setCategories] = useState([]);
+
+  useEffect(() => {
+    const fetchCategories = async () => {
+      try {
+        const response = await axios.get(
+          "https://seller.orderzshop.com/wp-json/wc/v3/products/categories",
+          {
+            params: {
+              per_page: 20,
+              consumer_key: "ck_281d66cb1af4225a90c3c735f1c284b62ce7d7e8",
+              consumer_secret: "cs_abf8f6b1783e631c17aa661ad09484fdf4717037",
+            },
+          }
+        );
+        console.log(response.data);
+        setCategories(response.data);
+      } catch (error) {
+        toast.error("Failed to fetch categories");
+      }
+    };
+
+    fetchCategories();
+  }, []);
 
   useEffect(() => {
     const fetchAttributes = async () => {
@@ -74,7 +103,7 @@ const CreateProduct = () => {
       navigate("/dashboard-products");
       window.location.reload();
     }
-  }, [dispatch, error, success]);
+  }, [dispatch, error, success, navigate]);
 
   const handleImageChange = (e) => {
     const files = Array.from(e.target.files);
@@ -142,7 +171,7 @@ const CreateProduct = () => {
     e.preventDefault();
     if (images.length === 0) {
       toast.error("Please upload at least one product image.");
-      return; 
+      return;
     }
     const newForm = new FormData();
     images.forEach((image) => {
@@ -172,10 +201,10 @@ const CreateProduct = () => {
         name,
         description,
         category,
-        subcategory, // Include subcategory
+        subcategory,
         tags,
         originalPrice,
-        discountPrice: discountPrice || null, // Ensure it’s not undefined
+        discountPrice: discountPrice || null,
         stock,
         shippingCost,
         isFreeShipping,
@@ -187,302 +216,388 @@ const CreateProduct = () => {
   };
 
   const getSubcategories = () => {
-    const selectedCategory = categoriesData.find(
-      (cat) => cat.title === category
-    );
-    return selectedCategory ? selectedCategory.subcategories : [];
+    return categories.filter((cat) => cat.parent === parseInt(category));
   };
+
   return (
-    <div className="w-[90%] 800px:w-[100%] bg-white shadow rounded-[4px] p-8 overflow-y-scroll">
-      <h5 className="text-[30px] font-Poppins text-center">Create Product</h5>
-      <form onSubmit={handleSubmit}>
-        <Grid container spacing={2}>
-          <Grid item xs={12}>
-            <FormControlLabel
-              control={
-                <Checkbox
-                  checked={isVariableProduct}
-                  onChange={(e) => {
-                    setIsVariableProduct(e.target.checked);
-                    setSelectedAttributeOptions({}); // Reset selected options when toggling
-                    setVariations([]); // Clear variations when switching product type
+    <div className="max-h-[calc(100vh-100px)] overflow-y-auto">
+      <Card className="w-full mx-auto shadow-lg rounded-lg overflow-hidden">
+        <CardContent className="p-8">
+          <Typography
+            variant="h4"
+            className="text-center mb-6 font-bold text-primary">
+            Create New Product
+          </Typography>
+          <form onSubmit={handleSubmit}>
+            <Grid container spacing={4}>
+              <Grid item xs={12}>
+                <FormControlLabel
+                  control={
+                    <Checkbox
+                      checked={isVariableProduct}
+                      onChange={(e) => {
+                        setIsVariableProduct(e.target.checked);
+                        setSelectedAttributeOptions({});
+                        setVariations([]);
+                      }}
+                    />
+                  }
+                  label={
+                    <Typography variant="body1" className="font-semibold">
+                      Is this a variable product?
+                    </Typography>
+                  }
+                />
+              </Grid>
+
+              <Grid item xs={12} md={4}>
+                <TextField
+                  label="Product Name"
+                  variant="outlined"
+                  fullWidth
+                  value={name}
+                  onChange={(e) => setName(e.target.value)}
+                  required
+                  InputProps={{
+                    startAdornment: (
+                      <Tag className="mr-2 text-gray-400" size={20} />
+                    ),
                   }}
                 />
-              }
-              label="Is this a variable product?"
-            />
-          </Grid>
-          <Grid item xs={12}>
-            <TextField
-              label="Name "
-              variant="outlined"
-              fullWidth
-              value={name}
-              onChange={(e) => setName(e.target.value)}
-              required
-              size="small"
-            />
-          </Grid>
-
-          <Grid item xs={12}>
-            <TextField
-              label="Description "
-              variant="outlined"
-              fullWidth
-              multiline
-              rows={2}
-              value={description}
-              onChange={(e) => setDescription(e.target.value)}
-              required
-              size="small"
-            />
-          </Grid>
-
-          <Grid item xs={6}>
-            <FormControl fullWidth size="small">
-              <InputLabel>Category *</InputLabel>
-              <Select
-                value={category}
-                onChange={(e) => {
-                  setCategory(e.target.value);
-                  setSubcategory("");
-                }}
-                required>
-                <MenuItem value="">
-                  <em>Choose a category</em>
-                </MenuItem>
-                {categoriesData.map((i) => (
-                  <MenuItem value={i.title} key={i.id}>
-                    {i.title}
-                  </MenuItem>
-                ))}
-              </Select>
-            </FormControl>
-          </Grid>
-
-          <Grid item xs={6}>
-            <FormControl fullWidth size="small">
-              <InputLabel>Subcategory</InputLabel>
-              <Select
-                value={subcategory}
-                onChange={(e) => setSubcategory(e.target.value)}
-                disabled={!category}>
-                <MenuItem value="">
-                  <em>Choose a subcategory</em>
-                </MenuItem>
-                {getSubcategories().map((sub) => (
-                  <MenuItem value={sub.title} key={sub.id}>
-                    {sub.title}
-                  </MenuItem>
-                ))}
-              </Select>
-            </FormControl>
-          </Grid>
-
-          <Grid item xs={6}>
-            <TextField
-              label="Tags"
-              variant="outlined"
-              fullWidth
-              value={tags}
-              onChange={(e) => setTags(e.target.value)}
-              size="small"
-            />
-          </Grid>
-
-          <Grid item xs={6}>
-            <TextField
-              label="Original Price "
-              type="number"
-              variant="outlined"
-              fullWidth
-              value={originalPrice}
-              onChange={(e) => setOriginalPrice(e.target.value)}
-              required
-              size="small"
-            />
-          </Grid>
-
-          <Grid item xs={6}>
-            <TextField
-              label="Price (With Discount)"
-              type="number"
-              variant="outlined"
-              fullWidth
-              value={discountPrice}
-              onChange={(e) => setDiscountPrice(e.target.value)}
-              size="small"
-            />
-          </Grid>
-
-          <Grid item xs={6}>
-            <TextField
-              label="Product Stock "
-              type="number"
-              variant="outlined"
-              fullWidth
-              value={stock}
-              onChange={(e) => setStock(e.target.value)}
-              required
-              size="small"
-            />
-          </Grid>
-
-          <Grid item xs={6}>
-            <TextField
-              label="Shipping Cost"
-              type="number"
-              variant="outlined"
-              fullWidth
-              value={shippingCost}
-              onChange={(e) => setShippingCost(e.target.value)}
-              disabled={isFreeShipping}
-              size="small"
-            />
-          </Grid>
-
-          <Grid item xs={6}>
-            <FormControlLabel
-              control={
-                <Checkbox
-                  checked={isFreeShipping}
-                  onChange={(e) => setIsFreeShipping(e.target.checked)}
-                />
-              }
-              label="Free Shipping"
-            />
-          </Grid>
-
-          <Grid item xs={12}>
-            <input
-              type="file"
-              id="upload"
-              className="hidden"
-              multiple
-              onChange={handleImageChange}
-            />
-            <label htmlFor="upload">
-              Upload Product Images
-              <AiOutlinePlusCircle size={30} className="mt-3" color="#555" />
-            </label>
-            <div className="w-full flex items-center flex-wrap">
-              {images.map((i) => (
-                <img
-                  src={i}
-                  key={i}
-                  alt=""
-                  required
-                  className="h-[60px] w-[60px] object-cover m-2"
-                />
-              ))}
-            </div>
-          </Grid>
-
-          {isVariableProduct &&
-            attributes.map((attribute) => (
-              <Grid item xs={12} key={attribute._id}>
-                <h5 className="text-[20px] font-Poppins">
-                  {attribute.name} Options
-                </h5>
-                {attribute.options.map((option) => (
-                  <FormControlLabel
-                    control={
-                      <Checkbox
-                        checked={
-                          selectedAttributeOptions[attribute._id]?.includes(
-                            option.value
-                          ) || false
-                        }
-                        onChange={() =>
-                          handleAttributeChange(attribute._id, option.value)
-                        }
-                      />
-                    }
-                    label={option.value}
-                    key={option.key}
-                  />
-                ))}
               </Grid>
-            ))}
 
-          {isVariableProduct && variations.length > 0 && (
-            <Grid item xs={12}>
-              <h5 className="text-[20px] font-Poppins">Product Variations</h5>
-              <TableContainer component={Paper}>
-                <Table aria-label="simple table">
-                  <TableHead>
-                    <TableRow>
-                      <TableCell>Options</TableCell>
-                      <TableCell>SKU</TableCell>
-                      <TableCell>Price</TableCell>
-                      <TableCell>Stock</TableCell>
-                    </TableRow>
-                  </TableHead>
-                  <TableBody>
-                    {variations.map((variation, index) => (
-                      <TableRow key={index}>
-                        <TableCell>{variation.options.join(" / ")}</TableCell>
-                        <TableCell>
-                          <TextField
-                            value={variation.sku}
-                            onChange={(e) =>
-                              handleVariationChange(
-                                index,
-                                "sku",
-                                e.target.value
-                              )
-                            }
-                            size="small"
+              <Grid item xs={12} md={4}>
+                <FormControl fullWidth>
+                  <InputLabel>Category *</InputLabel>
+                  <Select
+                    value={category}
+                    onChange={(e) => {
+                      setCategory(e.target.value);
+                      setSubcategory("");
+                    }}
+                    required
+                    startAdornment={
+                      <List className="mr-2 text-gray-400" size={20} />
+                    }>
+                    <MenuItem value="">
+                      <em>Choose a category</em>
+                    </MenuItem>
+                    {categories
+                      .filter(
+                        (cat) => !cat.parent && cat.name !== "Uncategorized"
+                      )
+                      .map((cat) => (
+                        <MenuItem value={cat.id} key={cat.id}>
+                          {cat.name}
+                        </MenuItem>
+                      ))}
+                  </Select>
+                </FormControl>
+              </Grid>
+
+              <Grid item xs={12} md={4}>
+                <FormControl fullWidth>
+                  <InputLabel>Subcategory</InputLabel>
+                  <Select
+                    value={subcategory}
+                    onChange={(e) => setSubcategory(e.target.value)}
+                    disabled={!category}>
+                    <MenuItem value="">
+                      <em>Choose a subcategory</em>
+                    </MenuItem>
+                    {getSubcategories().length > 0 &&
+                      getSubcategories().map((subcat) => (
+                        <MenuItem value={subcat.id} key={subcat.id}>
+                          {subcat.name}
+                        </MenuItem>
+                      ))}
+                  </Select>
+                </FormControl>
+              </Grid>
+
+              <Grid item xs={12} md={4}>
+                <TextField
+                  label="Tags"
+                  variant="outlined"
+                  fullWidth
+                  value={tags}
+                  onChange={(e) => setTags(e.target.value)}
+                  InputProps={{
+                    startAdornment: (
+                      <Tag className="mr-2 text-gray-400" size={20} />
+                    ),
+                  }}
+                />
+              </Grid>
+
+              {!isVariableProduct && (
+                <>
+                  <Grid item xs={12} md={4}>
+                    <TextField
+                      label="Original Price"
+                      type="number"
+                      variant="outlined"
+                      fullWidth
+                      value={originalPrice}
+                      onChange={(e) => setOriginalPrice(e.target.value)}
+                      required
+                      InputProps={{
+                        startAdornment: (
+                          <DollarSign
+                            className="mr-2 text-gray-400"
+                            size={20}
                           />
-                        </TableCell>
-                        <TableCell>
-                          <TextField
-                            type="number"
-                            value={variation.price}
-                            onChange={(e) =>
-                              handleVariationChange(
-                                index,
-                                "price",
-                                e.target.value
-                              )
-                            }
-                            size="small"
+                        ),
+                      }}
+                    />
+                  </Grid>
+
+                  <Grid item xs={12} md={4}>
+                    <TextField
+                      label="Discounted Price"
+                      type="number"
+                      variant="outlined"
+                      fullWidth
+                      value={discountPrice}
+                      onChange={(e) => setDiscountPrice(e.target.value)}
+                      InputProps={{
+                        startAdornment: (
+                          <DollarSign
+                            className="mr-2 text-gray-400"
+                            size={20}
                           />
-                        </TableCell>
-                        <TableCell>
-                          <TextField
-                            type="number"
-                            value={variation.stock}
-                            onChange={(e) =>
-                              handleVariationChange(
-                                index,
-                                "stock",
-                                e.target.value
-                              )
+                        ),
+                      }}
+                    />
+                  </Grid>
+
+                  <Grid item xs={12} md={4}>
+                    <TextField
+                      label="Product Stock"
+                      type="number"
+                      variant="outlined"
+                      fullWidth
+                      value={stock}
+                      onChange={(e) => setStock(e.target.value)}
+                      required
+                      InputProps={{
+                        startAdornment: (
+                          <Package className="mr-2 text-gray-400" size={20} />
+                        ),
+                      }}
+                    />
+                  </Grid>
+                </>
+              )}
+
+              <Grid item xs={12} md={2}>
+                <TextField
+                  label="Shipping Cost"
+                  type="number"
+                  variant="outlined"
+                  fullWidth
+                  value={shippingCost}
+                  onChange={(e) => setShippingCost(e.target.value)}
+                  disabled={isFreeShipping}
+                  InputProps={{
+                    startAdornment: (
+                      <Truck className="mr-2 text-gray-400" size={20} />
+                    ),
+                  }}
+                />
+              </Grid>
+
+              <Grid item xs={12} md={2}>
+                <FormControlLabel
+                  control={
+                    <Checkbox
+                      checked={isFreeShipping}
+                      onChange={(e) => setIsFreeShipping(e.target.checked)}
+                    />
+                  }
+                  label={
+                    <Typography variant="body1" className="font-semibold">
+                      Free Shipping
+                    </Typography>
+                  }
+                />
+              </Grid>
+
+              <Grid item xs={12} md={12}>
+                <TextField
+                  label="Product Description"
+                  variant="outlined"
+                  fullWidth
+                  multiline
+                  rows={2}
+                  value={description}
+                  onChange={(e) => setDescription(e.target.value)}
+                  required
+                />
+              </Grid>
+
+              {isVariableProduct && (
+                <Grid item xs={12}>
+                  <Divider className="my-4" />
+                  <Typography variant="h6" className="mb-4 font-semibold">
+                    Product Attributes
+                  </Typography>
+                  {attributes.map((attribute) => (
+                    <Box key={attribute._id} className="mb-4">
+                      <Typography
+                        variant="subtitle1"
+                        className="font-semibold mb-2">
+                        {attribute.name} Options
+                      </Typography>
+                      <Box className="flex flex-wrap gap-2">
+                        {attribute.options.map((option) => (
+                          <Chip
+                            key={option.key}
+                            label={option.value}
+                            onClick={() =>
+                              handleAttributeChange(attribute._id, option.value)
                             }
-                            size="small"
+                            color={
+                              selectedAttributeOptions[attribute._id]?.includes(
+                                option.value
+                              )
+                                ? "primary"
+                                : "default"
+                            }
+                            variant={
+                              selectedAttributeOptions[attribute._id]?.includes(
+                                option.value
+                              )
+                                ? "fille d"
+                                : "outlined"
+                            }
                           />
-                        </TableCell>
-                      </TableRow>
-                    ))}
-                  </TableBody>
-                </Table>
-              </TableContainer>
+                        ))}
+                      </Box>
+                    </Box>
+                  ))}
+                </Grid>
+              )}
+
+              {isVariableProduct && variations.length > 0 && (
+                <Grid item xs={12}>
+                  <Divider className="my-4" />
+                  <Typography variant="h6" className="mb-4 font-semibold">
+                    Product Variations
+                  </Typography>
+                  <TableContainer
+                    component={Paper}
+                    elevation={0}
+                    className="border rounded-lg">
+                    <Table>
+                      <TableHead>
+                        <TableRow>
+                          <TableCell>Options</TableCell>
+                          <TableCell>SKU</TableCell>
+                          <TableCell>Price</TableCell>
+                          <TableCell>Stock</TableCell>
+                        </TableRow>
+                      </TableHead>
+                      <TableBody>
+                        {variations.map((variation, index) => (
+                          <TableRow key={index}>
+                            <TableCell>
+                              {variation.options.join(" / ")}
+                            </TableCell>
+                            <TableCell>
+                              <TextField
+                                value={variation.sku}
+                                onChange={(e) =>
+                                  handleVariationChange(
+                                    index,
+                                    "sku",
+                                    e.target.value
+                                  )
+                                }
+                                size="small"
+                                variant="outlined"
+                              />
+                            </TableCell>
+                            <TableCell>
+                              <TextField
+                                type="number"
+                                value={variation.price}
+                                onChange={(e) =>
+                                  handleVariationChange(
+                                    index,
+                                    "price",
+                                    e.target.value
+                                  )
+                                }
+                                size="small"
+                                variant="outlined"
+                              />
+                            </TableCell>
+                            <TableCell>
+                              <TextField
+                                type="number"
+                                value={variation.stock}
+                                onChange={(e) =>
+                                  handleVariationChange(
+                                    index,
+                                    "stock",
+                                    e.target.value
+                                  )
+                                }
+                                size="small"
+                                variant="outlined"
+                              />
+                            </TableCell>
+                          </TableRow>
+                        ))}
+                      </TableBody>
+                    </Table>
+                  </TableContainer>
+                </Grid>
+              )}
+              <Grid item xs={12}>
+                <Box className="border-2 border-dashed border-gray-300 rounded-lg p-4 text-center cursor-pointer hover:bg-gray-50 transition-colors">
+                  <input
+                    type="file"
+                    id="upload"
+                    className="hidden"
+                    multiple
+                    onChange={handleImageChange}
+                  />
+                  <label htmlFor="upload" className="cursor-pointer">
+                    <Upload size={40} className="mx-auto mb-2 text-gray-400" />
+                    <Typography variant="body1" className="font-semibold">
+                      Upload Product Images
+                    </Typography>
+                  </label>
+                </Box>
+                <Box className="flex flex-wrap mt-4 gap-2">
+                  {images.map((i, index) => (
+                    <img
+                      src={i}
+                      key={index}
+                      alt=""
+                      className="h-20 w-20 object-cover rounded-md shadow-sm"
+                    />
+                  ))}
+                </Box>
+              </Grid>
+
+              <Grid item xs={12}>
+                <Button
+                  type="submit"
+                  variant="contained"
+                  color="primary"
+                  size="large"
+                  fullWidth
+                  className="mt-6">
+                  Create Product
+                </Button>
+              </Grid>
             </Grid>
-          )}
-
-          <Grid item xs={12}>
-            <Button
-              type="submit"
-              variant="contained"
-              color="primary"
-              fullWidth
-              className="mt-2">
-              Create
-            </Button>
-          </Grid>
-        </Grid>
-      </form>
+          </form>
+        </CardContent>
+      </Card>
     </div>
   );
 };

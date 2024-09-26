@@ -52,6 +52,7 @@ const ProductDetails = ({ data }) => {
       setClick(false);
     }
   }, [data, wishlist, id]);
+    // window.location.reload();
 
   const incrementCount = () => {
     setCount(count + 1);

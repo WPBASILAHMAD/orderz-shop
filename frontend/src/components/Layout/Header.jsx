@@ -40,6 +40,7 @@ const Header = ({ activeHeading }) => {
   const [categories, setCategories] = useState([]); // Add categories state
   const location = useLocation();
   const searchInputRef = useRef(null); // Create a ref for the search input
+  const [open, setOpen] = useState(false);
 
   // Fetch categories from WordPress API
   useEffect(() => {
@@ -56,17 +57,40 @@ const Header = ({ activeHeading }) => {
           }
         );
 
-        // Filter out "Uncategorized" category
-        const filteredCategories = response.data
-          .filter((category) => category.name !== "Uncategorized")
-          .map((category) => ({
-            id: category.id,
-            title: category.name,
-            image_Url: category.image?.src || "default_image_url", // Placeholder image
-            subcategories: [], // Add subcategories if you have them
-          }));
+        // Filter out "Uncategorized" category and only keep parent categories
+        const filteredCategories = await Promise.all(
+          response.data
+            .filter(
+              (category) =>
+                category.name !== "Uncategorized" && category.parent === 0
+            ) // Ensure it's a parent category
+            .map(async (category) => {
+              // Fetch subcategories for the parent category
+              const subcategoriesResponse = await axios.get(
+                `https://seller.orderzshop.com/wp-json/wc/v3/products/categories`,
+                {
+                  params: {
+                    parent: category.id, // Fetch subcategories for this category
+                    consumer_key: "ck_281d66cb1af4225a90c3c735f1c284b62ce7d7e8",
+                    consumer_secret:
+                      "cs_abf8f6b1783e631c17aa661ad09484fdf4717037",
+                  },
+                }
+              );
 
-        setCategories(filteredCategories); // Set categories state
+              return {
+                id: category.id,
+                title: category.name,
+                image_Url: category.image?.src || "default_image_url",
+                subcategories: subcategoriesResponse.data.map((sub) => ({
+                  ...sub,
+                  image: sub.image,
+                })),
+              };
+            })
+        );
+
+        setCategories(filteredCategories);
       } catch (error) {
         console.error("Error fetching categories:", error.message);
       }
@@ -74,6 +98,7 @@ const Header = ({ activeHeading }) => {
 
     fetchCategories();
   }, []);
+
   useEffect(() => {
     const handler = setTimeout(() => {
       setDebouncedSearchTerm(searchTerm);
@@ -284,6 +309,113 @@ const Header = ({ activeHeading }) => {
 
       {openCart && <Cart setOpenCart={setOpenCart} />}
       {openWishlist && <Wishlist setOpenWishlist={setOpenWishlist} />}
+      {/* Mobile header */}
+      <div
+        className={`${
+          active ? "shadow-sm fixed top-0 left-0 z-10" : ""
+        } w-full h-[60px] bg-[#fff] z-50 top-0 left-0 shadow-sm 800px:hidden`}>
+        <div className="w-full flex items-center justify-between">
+          <div>
+            <BiMenuAltLeft
+              size={40}
+              className="ml-4"
+              onClick={() => setOpen(true)}
+            />
+          </div>
+          <div>
+            <Link to="/">
+              <img
+                src={BlackLogo}
+                alt="Orderzshop Logo"
+                className="cursor-pointer object-cover w-64"
+              />
+            </Link>
+          </div>
+          <div>
+            <div
+              className="relative mr-[20px]"
+              onClick={() => setOpenCart(true)}>
+              <AiOutlineShoppingCart size={30} />
+              <span className="absolute right-0 top-0 rounded-full bg-[#3bc177] w-4 h-4 text-white font-mono text-[12px] leading-tight text-center">
+                {cart && cart.length}
+              </span>
+            </div>
+          </div>
+          {/* Cart popup */}
+          {openCart && <Cart setOpenCart={setOpenCart} />}
+          {/* Wishlist popup */}
+          {openWishlist && <Wishlist setOpenWishlist={setOpenWishlist} />}
+        </div>
+
+        {/* Header sidebar */}
+        {open && (
+          <div className="fixed w-full bg-[#0000005f] z-20 h-full top-0 left-0">
+            <div className="fixed w-[60%] bg-[#fff] h-screen top-0 left-0 z-10">
+              <div className="w-full flex justify-between">
+                <div>
+                  <BiMenuAltLeft
+                    size={40}
+                    className="ml-4 mt-5"
+                    onClick={() => setOpen(false)}
+                  />
+                </div>
+                <RxCross1
+                  size={30}
+                  className="ml-4 mt-5"
+                  onClick={() => setOpen(false)}
+                />
+              </div>
+
+              <div className="my-8 w-[92%] m-auto h-[40px] relative">
+                <input
+                  type="search"
+                  placeholder="Search Product..."
+                  value={searchTerm}
+                  onChange={handleSearchChange}
+                  className="h-[40px] w-full px-2 border-[#3957db] border-[2px] rounded-md"
+                />
+                <AiOutlineSearch
+                  size={30}
+                  className="absolute right-2 top-1.5 cursor-pointer"
+                />
+                {searchData && searchData.length !== 0 ? (
+                  <div className="absolute bg-[#fff] z-10 shadow w-full left-0 p-3">
+                    {searchData.map((i) => (
+                      <Link to={`/product/${i._id}`} key={i._id}>
+                        <div className="flex items-center">
+                          <img
+                            src={i.images[0]?.url}
+                            alt=""
+                            className="w-[50px] mr-2"
+                          />
+                          <h5>{i.name}</h5>
+                        </div>
+                      </Link>
+                    ))}
+                  </div>
+                ) : null}
+              </div>
+
+              <Navbar active={activeHeading} />
+              <div className="flex w-full justify-center">
+                {isAuthenticated ? (
+                  <Link to="/profile">
+                    <img
+                      src={user?.avatar?.url}
+                      className="w-[60px] h-[60px] rounded-full border-[3px] border-[#3957db]"
+                      alt="User Avatar"
+                    />
+                  </Link>
+                ) : (
+                  <Link to="/login">
+                    <CgProfile size={30} color="rgb(255 255 255 / 83%)" />
+                  </Link>
+                )}
+              </div>
+            </div>
+          </div>
+        )}
+      </div>
     </>
   );
 };
