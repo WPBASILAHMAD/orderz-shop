@@ -1,9 +1,11 @@
+/** @format */
+
 const mongoose = require("mongoose");
 
 const conversationSchema = new mongoose.Schema(
   {
-    groupTitle:{
-        type: String,
+    groupTitle: {
+      type: String,
     },
     members: {
       type: Array,
@@ -13,6 +15,10 @@ const conversationSchema = new mongoose.Schema(
     },
     lastMessageId: {
       type: String,
+    },
+    unreadMessages: {
+      type: Number,
+      default: 0,
     },
   },
   { timestamps: true }

@@ -185,11 +185,11 @@ const Signup = () => {
       </div>
 
       {/* Logo Grid */}
-      <div className="flex items-center justify-center bg-blue-100 w-full h-full">
+      <div className="flex items-center justify-center w-full h-full bg-blue-100">
         <img
-          src="/path-to-your-logo.png"
-          alt="Company Logo"
-          className="w-2/3 h-auto"
+          src="https://www.seller.orderzshop.com/wp-content/uploads/2024/09/Join-OrderzShop-as-a-New-User.png"
+          alt="orderzshop"
+          className="w-full h-full object-fill" // Adjusted to cover the full area
         />
       </div>
     </div>

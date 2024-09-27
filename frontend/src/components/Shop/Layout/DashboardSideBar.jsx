@@ -1,13 +1,19 @@
 /** @format */
 
-import React from "react";
+import React, { useState, useEffect } from "react";
+import { Badge } from "@material-ui/core";
+import { useSelector } from "react-redux";
 import {
   AiFillStepForward,
   AiOutlineFolderAdd,
   AiOutlineGift,
 } from "react-icons/ai";
 import { FiPackage, FiShoppingBag } from "react-icons/fi";
-import { MdEditAttributes, MdOutlineEditAttributes, MdOutlineLocalOffer } from "react-icons/md";
+import {
+  MdEditAttributes,
+  MdOutlineEditAttributes,
+  MdOutlineLocalOffer,
+} from "react-icons/md";
 import { RxDashboard } from "react-icons/rx";
 import { VscNewFile } from "react-icons/vsc";
 import {
@@ -20,8 +26,30 @@ import {
 import { Link } from "react-router-dom";
 import { BiMessageSquareDetail } from "react-icons/bi";
 import { HiOutlineReceiptRefund } from "react-icons/hi";
+import { server } from "../../../server";
+import axios from "axios";
 
 const DashboardSideBar = ({ active }) => {
+  const [unreadMessages, setUnreadMessages] = useState(0);
+  const { seller } = useSelector((state) => state.seller);
+
+  useEffect(() => {
+    const getUnreadMessages = async () => {
+      try {
+        const response = await axios.get(
+          `${server}/conversation/get-total-unread-messages/${seller._id}`,
+          { withCredentials: true }
+        );
+        setUnreadMessages(response.data.totalUnread);
+      } catch (error) {
+        console.log(error);
+      }
+    };
+
+    if (seller) {
+      getUnreadMessages();
+    }
+  }, [seller]);
   return (
     <div className="w-full h-[90vh] bg-white shadow-sm overflow-y-scroll sticky top-0 left-0 z-10">
       {/* single item */}
@@ -100,7 +128,7 @@ const DashboardSideBar = ({ active }) => {
         </Link>
       </div>
 
-      <div className="w-full flex items-center p-4">
+      {/* <div className="w-full flex items-center p-4">
         <Link to="/dashboard-events" className="w-full flex items-center">
           <MdOutlineLocalOffer
             size={30}
@@ -113,9 +141,9 @@ const DashboardSideBar = ({ active }) => {
             All Events
           </h5>
         </Link>
-      </div>
+      </div> */}
 
-      <div className="w-full flex items-center p-4">
+      {/* <div className="w-full flex items-center p-4">
         <Link to="/dashboard-create-event" className="w-full flex items-center">
           <VscNewFile
             size={30}
@@ -128,7 +156,7 @@ const DashboardSideBar = ({ active }) => {
             Create Event
           </h5>
         </Link>
-      </div>
+      </div> */}
 
       {/* <div className="w-full flex items-center p-4">
         <Link
@@ -149,10 +177,15 @@ const DashboardSideBar = ({ active }) => {
 
       <div className="w-full flex items-center p-4">
         <Link to="/dashboard-messages" className="w-full flex items-center">
-          <BiMessageSquareDetail
-            size={30}
-            color={`${active === 8 ? "crimson" : "#555"}`}
-          />
+          <Badge
+            overlap="rectangular"
+            badgeContent={unreadMessages}
+            color="secondary">
+            <BiMessageSquareDetail
+              size={30}
+              color={`${active === 8 ? "crimson" : "#555"}`}
+            />
+          </Badge>
           <h5
             className={`hidden 800px:block pl-2 text-[18px] font-[400] ${
               active === 8 ? "text-[crimson]" : "text-[#555]"

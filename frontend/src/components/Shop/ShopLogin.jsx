@@ -136,9 +136,9 @@ const ShopLogin = () => {
         {/* Logo Grid */}
         <div className="flex items-center justify-center w-full h-full bg-blue-100">
           <img
-            src="/path-to-your-logo.png"
+            src="https://www.seller.orderzshop.com/wp-content/uploads/2024/09/Start-Selling-on-OrderzShop-for-Just-Rs3000Month.png"
             alt="Company Logo"
-            className="w-1/2 h-auto"
+            className="w-full h-full object-contain" // Ensuring the full image is displayed without stretching
           />
         </div>
       </div>

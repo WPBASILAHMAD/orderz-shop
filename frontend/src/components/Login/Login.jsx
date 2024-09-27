@@ -141,9 +141,9 @@ const Login = () => {
         {/* Logo Grid */}
         <div className="flex items-center justify-center w-full h-full bg-blue-100">
           <img
-            src="/path-to-your-logo.png"
-            alt="Company Logo"
-            className="w-1/2 h-auto"
+            src="https://www.seller.orderzshop.com/wp-content/uploads/2024/09/Access-Your-OrderzShop-Account.png"
+            alt="orderzshop"
+            className="w-full h-full object-cover" // Adjusted to cover the full area
           />
         </div>
       </div>

@@ -1,4 +1,7 @@
+/** @format */
+
 const Messages = require("../model/messages");
+const Conversation = require("../model/conversation");
 const ErrorHandler = require("../utils/ErrorHandler");
 const catchAsyncErrors = require("../middleware/catchAsyncErrors");
 const express = require("express");
@@ -35,6 +38,13 @@ router.post(
 
       await message.save();
 
+      // Increment unread messages count in the Conversation model
+      await Conversation.findByIdAndUpdate(messageData.conversationId, {
+        $inc: { unreadMessages: 1 },
+        lastMessage: messageData.text,
+        lastMessageId: message._id,
+      });
+
       res.status(201).json({
         success: true,
         message,
@@ -57,6 +67,25 @@ router.get(
       res.status(201).json({
         success: true,
         messages,
+      });
+    } catch (error) {
+      return next(new ErrorHandler(error.message), 500);
+    }
+  })
+);
+
+// Mark messages as read
+router.put(
+  "/mark-messages-read/:conversationId",
+  catchAsyncErrors(async (req, res, next) => {
+    try {
+      await Conversation.findByIdAndUpdate(req.params.conversationId, {
+        unreadMessages: 0,
+      });
+
+      res.status(200).json({
+        success: true,
+        message: "Messages marked as read",
       });
     } catch (error) {
       return next(new ErrorHandler(error.message), 500);

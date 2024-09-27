@@ -17,10 +17,10 @@ export const navItems = [
     title: "Products",
     url: "/products",
   },
-  {
-    title: "Events",
-    url: "/events",
-  },
+  // {
+  //   title: "Events",
+  //   url: "/events",
+  // },
   {
     title: "FAQ",
     url: "/faq",
@@ -318,11 +318,11 @@ export const footercompanyLinks = [
 ];
 
 export const footerSupportLinks = [
-  {
-    id: uuidv4(),
-    title: "Events",
-    url: "/events",
-  },
+  // {
+  //   id: uuidv4(),
+  //   title: "Events",
+  //   url: "/events",
+  // },
   {
     id: uuidv4(),
     title: "Products",

@@ -1,3 +1,5 @@
+/** @format */
+
 const Conversation = require("../model/conversation");
 const ErrorHandler = require("../utils/ErrorHandler");
 const catchAsyncErrors = require("../middleware/catchAsyncErrors");
@@ -59,7 +61,6 @@ router.get(
   })
 );
 
-
 // get user conversations
 router.get(
   "/get-all-conversation-user/:id",
@@ -97,6 +98,55 @@ router.put(
       res.status(201).json({
         success: true,
         conversation,
+      });
+    } catch (error) {
+      return next(new ErrorHandler(error), 500);
+    }
+  })
+);
+
+// get total unread messages for seller
+router.get(
+  "/get-total-unread-messages/:sellerId",
+  isSeller,
+  catchAsyncErrors(async (req, res, next) => {
+    try {
+      const totalUnread = await Conversation.aggregate([
+        {
+          $match: {
+            members: req.params.sellerId,
+          },
+        },
+        {
+          $group: {
+            _id: null,
+            total: { $sum: "$unreadMessages" },
+          },
+        },
+      ]);
+
+      res.status(200).json({
+        success: true,
+        totalUnread: totalUnread[0]?.total || 0,
+      });
+    } catch (error) {
+      return next(new ErrorHandler(error), 500);
+    }
+  })
+);
+
+// update unread messages to 0 when seller opens the conversation
+router.put(
+  "/update-unread-messages/:conversationId",
+  isSeller,
+  catchAsyncErrors(async (req, res, next) => {
+    try {
+      await Conversation.findByIdAndUpdate(req.params.conversationId, {
+        unreadMessages: 0,
+      });
+
+      res.status(200).json({
+        success: true,
       });
     } catch (error) {
       return next(new ErrorHandler(error), 500);

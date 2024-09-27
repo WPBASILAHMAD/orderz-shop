@@ -69,7 +69,7 @@ const ShopCreate = () => {
     <div className="min-h-screen bg-gray-50 flex items-center justify-center w-full">
       <div className="grid grid-cols-1 md:grid-cols-2 w-full h-full">
         {/* Form Grid */}
-        <div className="flex items-center justify-center bg-white w-full h-full">
+        <div className="flex items-center justify-center bg-white w-full h-fit ">
           <div className="w-full max-w-lg p-8">
             <h2 className="text-center text-3xl font-extrabold text-gray-900 mb-6">
               Register as a seller
@@ -247,9 +247,9 @@ const ShopCreate = () => {
         {/* Logo Grid */}
         <div className="flex items-center justify-center w-full h-full bg-blue-100">
           <img
-            src="/path-to-your-logo.png"
-            alt="Company Logo"
-            className="w-1/2 h-auto"
+            src="https://www.seller.orderzshop.com/wp-content/uploads/2024/09/Start-Selling-on-OrderzShop-for-Just-Rs3000Month.png"
+            alt="orderzshop"
+            className="w-full h-full object-fill" // Adjusted to cover the full area
           />
         </div>
       </div>
