@@ -11,17 +11,17 @@ import Sponsored from "../components/Route/Comman/VendorsAvatars";
 import Branding from "../components/Route/Branding/Branding";
 import Footer from "../components/Layout/Footer";
 import VendorsAvatar from "./VendorsAvatar";
+import ProductsSlider from "../components/Route/ProductsSlider/ProductsSlider";
 const HomePage = () => {
   return (
     <div>
       <Header activeHeading={1} />
       <Hero />
-
       <VendorsAvatar />
-
       <Categories />
+      <ProductsSlider />
       <BestDeals />
-      <Events />
+      {/* <Events /> */}
       <FeaturedProduct />
       {/* <Branding /> */}
       <Footer />
