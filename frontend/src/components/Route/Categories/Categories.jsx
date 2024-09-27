@@ -1,7 +1,11 @@
 /** @format */
 import React, { useEffect, useState } from "react";
 import axios from "axios";
-import { brandingData } from "../../../static/data"; // Assuming you want to keep branding data
+import { Swiper, SwiperSlide } from "swiper/react"; // Import Swiper components
+import "swiper/css"; // Import Swiper styles
+import "swiper/css/pagination";
+import "swiper/css/navigation";
+import { Autoplay, Pagination, Navigation } from "swiper/modules"; // Correct path for Swiper modules in v7+
 import styles from "../../../styles/styles";
 
 const Categories = () => {
@@ -26,7 +30,6 @@ const Categories = () => {
         // Organizing categories and subcategories
         const organizedCategories = response.data.reduce((acc, category) => {
           if (category.name !== "Uncategorized") {
-            // Exclude "Uncategorized"
             if (category.parent === 0) {
               // Only top-level categories
               acc.push({
@@ -69,28 +72,51 @@ const Categories = () => {
 
   return (
     <div
-      className={`${styles.section} bg-white p-6 rounded-lg mb-12`}
+      className={`${styles.section} bg-white p-8 rounded-lg mb-12 shadow-lg`}
       id="categories">
-      <div className="grid grid-cols-1 gap-[5px] md:grid-cols-2 md:gap-[10px] lg:grid-cols-4 lg:gap-[20px] xl:grid-cols-5 xl:gap-[30px]">
+      {/* Title */}
+      <h2 className="text-3xl font-bold text-center mb-8 text-gray-800">
+        Categories
+      </h2>
+
+      {/* Swiper Slider */}
+      <Swiper
+        spaceBetween={30}
+        slidesPerView={3} // Number of visible slides
+        loop={true}
+        autoplay={{
+          delay: 2500,
+          disableOnInteraction: false,
+        }}
+        pagination={{
+          clickable: true,
+        }}
+        navigation={true}
+        modules={[Autoplay, Pagination, Navigation]} // Correct modules import
+        className="mySwiper">
         {categories.map((i) => {
           const handleSubmit = () => {
-            window.location.href = `/products?category=${i.id}`; // Refresh the page
+            window.location.href = `/products?category=${i.id}`; // Redirect to category page
           };
+
           return (
-            <div
-              className="w-full h-[100px] flex items-center justify-between cursor-pointer overflow-hidden"
-              key={i.id}
-              onClick={handleSubmit}>
-              <h5 className={`text-[18px] leading-[1.3]`}>{i.title}</h5>
-              <img
-                src={i.image_Url}
-                className="w-[120px] object-cover"
-                alt={i.title} // Better alt text
-              />
-            </div>
+            <SwiperSlide key={i.id}>
+              <div
+                className="w-full h-[200px] flex flex-col items-center justify-center bg-white shadow-md rounded-lg p-4 hover:shadow-xl transition-shadow cursor-pointer overflow-hidden"
+                onClick={handleSubmit}>
+                <img
+                  src={i.image_Url}
+                  className="w-[80px] h-[80px] object-cover mb-4 rounded-full border"
+                  alt={i.title}
+                />
+                <h5 className="text-lg font-semibold text-gray-700 text-center">
+                  {i.title}
+                </h5>
+              </div>
+            </SwiperSlide>
           );
         })}
-      </div>
+      </Swiper>
     </div>
   );
 };

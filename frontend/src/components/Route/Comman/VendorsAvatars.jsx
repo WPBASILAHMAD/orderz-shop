@@ -68,7 +68,7 @@ const OurTrustedVendors = () => {
         Our Trusted Vendors
       </h2>
 
-      <div className="max-w-7xl mx-auto">
+      <div className="lg:max-w-7xl  mx-auto">
         {shops.length > 0 ? (
           <Slider {...settings}>
             {shops.map((shop, index) => (

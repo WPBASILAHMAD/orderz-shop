@@ -52,7 +52,7 @@ const ProductDetails = ({ data }) => {
       setClick(false);
     }
   }, [data, wishlist, id]);
-    // window.location.reload();
+  // window.location.reload();
 
   const incrementCount = () => {
     setCount(count + 1);
@@ -212,14 +212,19 @@ const ProductDetails = ({ data }) => {
               </p>
 
               <div className="flex items-center space-x-3 mb-6">
-                <h4 className="text-2xl text-[#256aff]  font-semibold">
-                  Rs:
-                  {data.discountPrice ? data.discountPrice : data.originalPrice}
-                </h4>
-                {data.discountPrice && (
-                  <h3 className="text-lg text-gray-400 line-through">
+                {data.discountPrice ? (
+                  <>
+                    <h4 className="text-2xl text-[#256aff] font-semibold">
+                      Rs: {data.discountPrice}
+                    </h4>
+                    <h3 className="text-lg text-gray-400 line-through">
+                      Rs: {data.originalPrice}
+                    </h3>
+                  </>
+                ) : (
+                  <h4 className="text-2xl text-[#256aff] font-semibold">
                     Rs: {data.originalPrice}
-                  </h3>
+                  </h4>
                 )}
               </div>
 
@@ -343,48 +348,51 @@ const ProductDetails = ({ data }) => {
           </div>
 
           {/* Reviews */}
-<div className="w-full mt-8 bg-white shadow-lg rounded-lg p-6">
-  <h1 className="text-3xl font-bold text-gray-900 mb-6">
-    Product Reviews
-  </h1>
-  <div className="flex">
-    <div className="w-[30%] flex flex-col border-r pr-6">
-      <h5 className="text-4xl font-bold text-[#256aff]">
-        {averageRating}/5
-      </h5>
-      <Ratings rating={averageRating} />
-      <span className="text-sm text-gray-500 mt-2">
-        ({totalReviewsLength} Ratings)
-      </span>
-    </div>
-    <div className="w-[70%] pl-6">
-      {allReviews.slice(0, reviewsToShow).map((review, index) => (
-        <div className="w-full flex my-6 border-b pb-4 hover:bg-gray-50 transition duration-300 ease-in-out" key={index}>
-          <img
-            src={user?.avatar?.url}
-            alt=""
-            className="w-[60px] h-[60px] rounded-full border border-gray-300"
-          />
-          <div className="pl-4">
-            <div className="w-full flex items-center">
-              <h1 className="font-semibold mr-3 text-lg">{review.user.name}</h1>
-              <Ratings rating={review.rating} />
+          <div className="w-full mt-8 bg-white shadow-lg rounded-lg p-6">
+            <h1 className="text-3xl font-bold text-gray-900 mb-6">
+              Product Reviews
+            </h1>
+            <div className="flex">
+              <div className="w-[30%] flex flex-col border-r pr-6">
+                <h5 className="text-4xl font-bold text-[#256aff]">
+                  {averageRating}/5
+                </h5>
+                <Ratings rating={averageRating} />
+                <span className="text-sm text-gray-500 mt-2">
+                  ({totalReviewsLength} Ratings)
+                </span>
+              </div>
+              <div className="w-[70%] pl-6">
+                {allReviews.slice(0, reviewsToShow).map((review, index) => (
+                  <div
+                    className="w-full flex my-6 border-b pb-4 hover:bg-gray-50 transition duration-300 ease-in-out"
+                    key={index}>
+                    <img
+                      src={user?.avatar?.url}
+                      alt=""
+                      className="w-[60px] h-[60px] rounded-full border border-gray-300"
+                    />
+                    <div className="pl-4">
+                      <div className="w-full flex items-center">
+                        <h1 className="font-semibold mr-3 text-lg">
+                          {review.user.name}
+                        </h1>
+                        <Ratings rating={review.rating} />
+                      </div>
+                      <p className="text-gray-600 text-md">{review.comment}</p>
+                    </div>
+                  </div>
+                ))}
+                {reviewsToShow < allReviews.length && (
+                  <button
+                    onClick={loadMoreReviews}
+                    className="mt-4 text-blue-500 hover:underline font-medium">
+                    Load More Reviews
+                  </button>
+                )}
+              </div>
             </div>
-            <p className="text-gray-600 text-md">{review.comment}</p>
           </div>
-        </div>
-      ))}
-      {reviewsToShow < allReviews.length && (
-        <button
-          onClick={loadMoreReviews}
-          className="mt-4 text-blue-500 hover:underline font-medium">
-          Load More Reviews
-        </button>
-      )}
-    </div>
-  </div>
-</div>
-
         </div>
       ) : null}
     </div>

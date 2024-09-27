@@ -173,6 +173,7 @@ const CreateProduct = () => {
       toast.error("Please upload at least one product image.");
       return;
     }
+
     const newForm = new FormData();
     images.forEach((image) => {
       newForm.append("images", image);
@@ -184,9 +185,8 @@ const CreateProduct = () => {
     newForm.append("subcategory", subcategory);
     newForm.append("tags", tags);
     newForm.append("originalPrice", originalPrice);
-    if (discountPrice) {
-      newForm.append("discountPrice", discountPrice);
-    }
+    newForm.append("discountPrice", discountPrice || null); // Send discountPrice if available
+
     newForm.append("stock", stock);
     newForm.append("shippingCost", shippingCost);
     newForm.append("isFreeShipping", isFreeShipping);
@@ -204,7 +204,7 @@ const CreateProduct = () => {
         subcategory,
         tags,
         originalPrice,
-        discountPrice: discountPrice || null,
+        discountPrice: discountPrice || null, // Ensure only valid discountPrice is sent
         stock,
         shippingCost,
         isFreeShipping,

@@ -53,7 +53,7 @@ const Hero = () => {
               <img
                 src={url}
                 alt={`Slide ${index}`}
-                className="w-full h-auto object-cover"
+                className="w-full lg:h-auto h-full  object-cover"
                 style={{
                   margin: "10px", // Adjust margin for mobile
                   borderRadius: "20px", // More pronounced border radius

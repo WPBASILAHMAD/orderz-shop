@@ -12,6 +12,7 @@ const DropDown = ({ categoriesData, setDropDown }) => {
   const submitHandle = (category) => {
     // Navigate to the selected category
     navigate(`/products?category=${category.id}`);
+    window.location.reload();
     setDropDown(false); // Close dropdown after navigation
   };
 
